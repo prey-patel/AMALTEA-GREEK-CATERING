@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+
+# Sitemap URL
+Sitemap: https://aegean-catering.vercel.app/sitemap.xml

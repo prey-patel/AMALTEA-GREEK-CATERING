@@ -1,0 +1,6 @@
+{
+  "name": "AMALTEA GREEK CATERING",
+  "description": "Premium Greek Catering & Events inspired by Aegean hospitality, fine Mediterranean dining, and the culinary excellence of the Paros, El Greco, and Mykonos restaurants in Warsaw.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
