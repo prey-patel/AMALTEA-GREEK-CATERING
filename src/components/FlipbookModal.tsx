@@ -39,23 +39,12 @@ export function FlipbookModal({ lang, pdfUrl, isOpen, onClose }: FlipbookModalPr
   const [loading, setLoading] = useState(true);
   const [loadingStatus, setLoadingStatus] = useState('');
   const [pages, setPages] = useState<string[]>([]);
-  const [currentPageIndex, setCurrentPageIndex] = useState(0); // 0-based page index for mobile, or spread index for desktop
+  const [currentPageIndex, setCurrentPageIndex] = useState(0); // 0-based page index
   const [zoom, setZoom] = useState(1);
-  const [isMobile, setIsMobile] = useState(false);
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Handle window resizing to detect mobile layout
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -147,11 +136,9 @@ export function FlipbookModal({ lang, pdfUrl, isOpen, onClose }: FlipbookModalPr
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [pages, currentPageIndex, loading, isMobile, isFlipping]);
+  }, [pages, currentPageIndex, loading, isFlipping]);
 
-  const maxPageIndex = isMobile 
-    ? pages.length - 1 
-    : Math.ceil((pages.length + 1) / 2) - 1; // Double spread counting (Cover is index 0)
+  const maxPageIndex = pages.length - 1;
 
   const handleNext = () => {
     if (currentPageIndex < maxPageIndex && !isFlipping) {
@@ -180,20 +167,6 @@ export function FlipbookModal({ lang, pdfUrl, isOpen, onClose }: FlipbookModalPr
   const resetZoom = () => setZoom(1);
 
   if (!isOpen) return null;
-
-  // Desktop Spread Renderer Helper
-  const getDesktopPages = (spreadIdx: number) => {
-    if (spreadIdx === 0) {
-      // Cover page (Right side only)
-      return { left: null, right: pages[0] };
-    }
-    const leftIdx = spreadIdx * 2 - 1;
-    const rightIdx = spreadIdx * 2;
-    return {
-      left: pages[leftIdx] || null,
-      right: pages[rightIdx] || null
-    };
-  };
 
   return (
     <AnimatePresence>
@@ -280,145 +253,36 @@ export function FlipbookModal({ lang, pdfUrl, isOpen, onClose }: FlipbookModalPr
               </p>
             </div>
           ) : (
-            // Perspective Wrap for 3D Book view
             <motion.div
               style={{ scale: zoom }}
               className="relative max-w-full max-h-full flex items-center justify-center transition-transform duration-200"
             >
-              {isMobile ? (
-                // Mobile layout: Single page with smooth 3D flip card
-                <div className="relative w-[85vw] max-w-[360px] max-h-[60vh] aspect-[1/1.4] shadow-2xl bg-white border border-slate-200 rounded-sm overflow-hidden select-text text-black">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={currentPageIndex}
-                      initial={{ 
-                        opacity: 0, 
-                        rotateY: flipDirection === 'next' ? 45 : -45, 
-                        x: flipDirection === 'next' ? 50 : -50 
-                      }}
-                      animate={{ opacity: 1, rotateY: 0, x: 0 }}
-                      exit={{ 
-                        opacity: 0, 
-                        rotateY: flipDirection === 'next' ? -45 : 45, 
-                        x: flipDirection === 'next' ? -50 : 50 
-                      }}
-                      transition={{ duration: 0.35, ease: 'easeInOut' }}
-                      src={pages[currentPageIndex]}
-                      alt={`Menu Page ${currentPageIndex + 1}`}
-                      className="w-full h-full object-contain pointer-events-none"
-                    />
-                  </AnimatePresence>
-                </div>
-              ) : (
-                // Desktop Layout: Symmetrical Double-Page Spread
-                <div 
-                  className="flex relative w-[90vw] max-w-[840px] max-h-[70vh] aspect-[1.4/1] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] bg-[#1e150f]/80 p-3 rounded-md border border-[#C5A880]/15"
-                  style={{ perspective: '1600px' }}
-                >
-                  {/* Symmetrical Spines & Leather Cover */}
-                  <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/40 to-transparent border-l border-amber-905/10 rounded-l z-20 pointer-events-none" />
-                  <div className="absolute inset-y-0 right-0 w-3 bg-gradient-to-l from-black/40 to-transparent border-r border-amber-905/10 rounded-r z-20 pointer-events-none" />
-                  
-                  {/* Center spine */}
-                  <div className="absolute inset-y-3 left-1/2 -ml-[1px] w-[2px] bg-gradient-to-r from-black/80 via-yellow-900/20 to-black/80 shadow-[0_0_10px_rgba(0,0,0,0.8)] z-35 pointer-events-none" />
-
-                  {/* LEFT PAGE */}
-                  <div className="w-1/2 h-full bg-white border-r border-slate-100 relative overflow-hidden flex items-center justify-center select-text text-black rounded-l-sm">
-                    {getDesktopPages(currentPageIndex).left ? (
-                      <img
-                        src={getDesktopPages(currentPageIndex).left || ''}
-                        alt="Left Page"
-                        className="w-full h-full object-contain pointer-events-none"
-                      />
-                    ) : (
-                      // Left cover padding (inside of front cover)
-                      <div className="w-full h-full bg-[#faf7f2] dark:bg-slate-900 flex items-center justify-center relative">
-                        <div className="absolute inset-4 border border-dashed border-[#C5A880]/30" />
-                      </div>
-                    )}
-                    <div className="absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-black/8 to-transparent pointer-events-none" />
-                  </div>
-
-                  {/* RIGHT PAGE */}
-                  <div className="w-1/2 h-full bg-white border-l border-slate-100 relative overflow-hidden flex items-center justify-center select-text text-black rounded-r-sm">
-                    {getDesktopPages(currentPageIndex).right ? (
-                      <img
-                        src={getDesktopPages(currentPageIndex).right || ''}
-                        alt="Right Page"
-                        className="w-full h-full object-contain pointer-events-none"
-                      />
-                    ) : (
-                      // Right cover padding (inside of back cover)
-                      <div className="w-full h-full bg-[#faf7f2] dark:bg-slate-900 flex items-center justify-center relative">
-                        <div className="absolute inset-4 border border-dashed border-[#C5A880]/30" />
-                      </div>
-                    )}
-                    <div className="absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-black/8 to-transparent pointer-events-none" />
-                  </div>
-
-                  {/* 3D Flipping Animation Page Overlay */}
-                  {isFlipping && (
-                    <motion.div
-                      style={{
-                        position: 'absolute',
-                        top: 12,
-                        bottom: 12,
-                        width: 'calc(50% - 12px)',
-                        left: flipDirection === 'next' ? '50%' : '12px',
-                        transformOrigin: flipDirection === 'next' ? 'left center' : 'right center',
-                        zIndex: 30,
-                        transformStyle: 'preserve-3d',
-                      }}
-                      initial={{ rotateY: 0 }}
-                      animate={{ rotateY: flipDirection === 'next' ? -180 : 180 }}
-                      transition={{ duration: 0.5, ease: 'easeInOut' }}
-                      className="bg-white pointer-events-none shadow-2xl relative overflow-hidden rounded-sm"
-                    >
-                      {/* Page shadows / depth */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10 backface-hidden" />
-                      
-                      {/* Render appropriate flipping side texture */}
-                      {flipDirection === 'next' ? (
-                        // Next Page Turn: Front of flip is the current right page, back of flip is the next left page
-                        <div className="w-full h-full relative" style={{ transformStyle: 'preserve-3d' }}>
-                          <div className="absolute inset-0 backface-hidden flex items-center justify-center">
-                            <img
-                              src={getDesktopPages(currentPageIndex).right || ''}
-                              className="w-full h-full object-contain"
-                              alt="Flipping Page Front"
-                            />
-                          </div>
-                          <div className="absolute inset-0 backface-hidden flex items-center justify-center" style={{ transform: 'rotateY(180deg)' }}>
-                            <img
-                              src={getDesktopPages(currentPageIndex + 1).left || ''}
-                              className="w-full h-full object-contain"
-                              alt="Flipping Page Back"
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        // Prev Page Turn: Front of flip is the current left page, back of flip is the prev right page
-                        <div className="w-full h-full relative" style={{ transformStyle: 'preserve-3d' }}>
-                          <div className="absolute inset-0 backface-hidden flex items-center justify-center">
-                            <img
-                              src={getDesktopPages(currentPageIndex).left || ''}
-                              className="w-full h-full object-contain"
-                              alt="Flipping Page Front"
-                            />
-                          </div>
-                          <div className="absolute inset-0 backface-hidden flex items-center justify-center" style={{ transform: 'rotateY(180deg)' }}>
-                            <img
-                              src={getDesktopPages(currentPageIndex - 1).right || ''}
-                              className="w-full h-full object-contain"
-                              alt="Flipping Page Back"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-                </div>
-              )}
+              {/* Single-Page Responsive Viewer */}
+              <div 
+                className="relative w-[85vw] max-w-[360px] sm:max-w-[460px] md:max-w-[560px] lg:max-w-[620px] max-h-[72vh] aspect-[1/1.41] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] bg-white border border-slate-200 rounded-sm overflow-hidden select-text text-black"
+                style={{ perspective: '1200px' }}
+              >
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={currentPageIndex}
+                    initial={{ 
+                      opacity: 0, 
+                      rotateY: flipDirection === 'next' ? 45 : -45, 
+                      x: flipDirection === 'next' ? 50 : -50 
+                    }}
+                    animate={{ opacity: 1, rotateY: 0, x: 0 }}
+                    exit={{ 
+                      opacity: 0, 
+                      rotateY: flipDirection === 'next' ? -45 : 45, 
+                      x: flipDirection === 'next' ? -50 : 50 
+                    }}
+                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    src={pages[currentPageIndex]}
+                    alt={`Menu Page ${currentPageIndex + 1}`}
+                    className="w-full h-full object-contain pointer-events-none"
+                  />
+                </AnimatePresence>
+              </div>
             </motion.div>
           )}
         </div>
@@ -438,13 +302,7 @@ export function FlipbookModal({ lang, pdfUrl, isOpen, onClose }: FlipbookModalPr
 
             {/* Page info */}
             <span className="font-mono text-xs text-slate-300 uppercase tracking-widest">
-              {isMobile ? (
-                `${lang === 'pl' ? 'Strona' : 'Page'} ${currentPageIndex + 1} / ${pages.length}`
-              ) : (
-                currentPageIndex === 0 
-                  ? (lang === 'pl' ? 'Okładka' : 'Cover')
-                  : `${lang === 'pl' ? 'Strony' : 'Pages'} ${currentPageIndex * 2} - ${Math.min(currentPageIndex * 2 + 1, pages.length)} / ${pages.length}`
-              )}
+              {`${lang === 'pl' ? 'Strona' : 'Page'} ${currentPageIndex + 1} / ${pages.length}`}
             </span>
 
             {/* Next arrow */}
