@@ -144,96 +144,12 @@ export default function ServicesSection({ lang, setActiveTab, t, categories, isR
       {/* Dual Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 relative z-10 max-w-7xl mx-auto">
         
-        {/* Card 1: Business Catering (Image on Left, Content on Right) */}
+        {/* Card 1: Private Catering (Content on Left, Image on Right) */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.8 }}
-          className="bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.04)] rounded-none flex flex-col md:flex-row overflow-hidden relative group transition-all duration-300 hover:shadow-[0_20px_45px_-15px_rgba(197,168,128,0.12)]"
-        >
-          {/* Image (Left) */}
-          <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-auto md:min-h-[420px] relative overflow-hidden shrink-0">
-            <img
-              src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=70&w=800"
-              alt="Business conference dining hall"
-              loading="lazy"
-              width="600"
-              height="450"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-            />
-            {/* project watermark logo overlay */}
-            <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/15 transition-colors duration-500 flex items-center justify-center">
-              <div className="border border-white/20 p-4 backdrop-blur-[2px] bg-slate-950/30 text-center select-none max-w-[160px] transform scale-95 group-hover:scale-100 transition-transform duration-500">
-                <span className="font-serif text-[10px] tracking-[0.2em] text-white block uppercase">AMALTEA</span>
-                <span className="font-sans text-[6px] tracking-[0.25em] text-[#C5A880] block uppercase mt-0.5">GREEK CATERING</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Content (Right) */}
-          <div className="w-full md:w-1/2 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-6 bg-[#FAF6EE]/20 dark:bg-slate-900/30">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2 text-[#C5A880]">
-                <svg className="w-6 h-3 fill-currentColor rotate-[-10deg]" viewBox="0 0 24 24">
-                  <path d="M12 21a9 9 0 0 1-5.65-2.02l.65-.76A8 8 0 0 0 12 20a8 8 0 0 0 7-4.13l.87.5A9 9 0 0 1 12 21zm-7-6.2a8.88 8.88 0 0 1-.5-2.8c0-3 1.8-5.7 4.5-6.83l.38.92A8 8 0 0 0 5.5 12a8 8 0 0 0 .42 2.5l-.92.3zM19 12a8 8 0 0 0-3.88-6.91l.38-.92c2.7 1.13 4.5 3.83 4.5 6.83a8.88 8.88 0 0 1-.5 2.8l-.92-.3a8 8 0 0 0 .42-2.5z" />
-                </svg>
-                <div className="h-[0.5px] w-12 bg-[#C5A880]/30" />
-              </div>
-
-              <h3 className="font-serif text-2xl font-semibold text-blue-950 dark:text-sky-200 uppercase tracking-wide">
-                {t('businessTitle')}
-              </h3>
-
-              <div className="flex items-center space-x-3">
-                <div className="h-[0.5px] w-6 bg-[#C5A880]/40" />
-                <span className="text-[#C5A880] text-[6px]">◆</span>
-                <div className="h-[0.5px] w-6 bg-[#C5A880]/40" />
-              </div>
-
-
-
-              {/* Subcategory Grid */}
-              <div className="grid grid-cols-1 gap-y-3.5 pt-2">
-                {businessItems.map((sub, sIdx) => {
-                  const SubIcon = sub.Icon;
-                  return (
-                    <div key={sIdx} className="flex items-start space-x-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-[#C5A880]/20 flex items-center justify-center text-[#C5A880] shrink-0 group-hover:bg-[#C5A880] group-hover:text-white group-hover:border-[#C5A880] transition-colors duration-300">
-                        <SubIcon className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="min-w-0 pt-1">
-                        <span className="text-[10.5px] font-sans font-bold uppercase tracking-wider text-blue-955 dark:text-sky-200 leading-tight block">
-                          {sub.title}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <motion.button
-                whileHover={{ scale: isReduced ? 1 : 1.02, boxShadow: "0 4px 15px rgba(53, 92, 125, 0.25)" }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={() => setActiveTab('business')}
-                className="w-full px-6 py-3.5 bg-blue-800 hover:bg-blue-900 dark:bg-blue-900 dark:hover:bg-blue-950 text-white font-sans font-bold tracking-widest text-[9px] uppercase shadow-md transition-all cursor-pointer inline-flex items-center justify-center space-x-2 border border-[#C5A880]/20 hover:border-[#C5A880]/60"
-              >
-                <span>{t('exploreBusinessBtn')}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#C5A880]" />
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Card 2: Private Catering (Content on Left, Image on Right) */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.8, delay: 0.15 }}
           className="bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.04)] rounded-none flex flex-col md:flex-row overflow-hidden relative group transition-all duration-300 hover:shadow-[0_20px_45px_-15px_rgba(197,168,128,0.12)]"
         >
           {/* Content (Left) - order-2 md:order-1 to swap on desktop */}
@@ -255,8 +171,6 @@ export default function ServicesSection({ lang, setActiveTab, t, categories, isR
                 <span className="text-[#C5A880] text-[6px]">◆</span>
                 <div className="h-[0.5px] w-6 bg-[#C5A880]/40" />
               </div>
-
-
 
               {/* Subcategory Grid */}
               <div className="grid grid-cols-1 gap-y-3.5 pt-2">
@@ -308,6 +222,88 @@ export default function ServicesSection({ lang, setActiveTab, t, categories, isR
                 <span className="font-serif text-[10px] tracking-[0.2em] text-white block uppercase">AMALTEA</span>
                 <span className="font-sans text-[6px] tracking-[0.25em] text-[#C5A880] block uppercase mt-0.5">GREEK CATERING</span>
               </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Card 2: Business Catering (Image on Left, Content on Right) */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.04)] rounded-none flex flex-col md:flex-row overflow-hidden relative group transition-all duration-300 hover:shadow-[0_20px_45px_-15px_rgba(197,168,128,0.12)]"
+        >
+          {/* Image (Left) */}
+          <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-auto md:min-h-[420px] relative overflow-hidden shrink-0">
+            <img
+              src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=70&w=800"
+              alt="Business conference dining hall"
+              loading="lazy"
+              width="600"
+              height="450"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+            />
+            {/* project watermark logo overlay */}
+            <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/15 transition-colors duration-500 flex items-center justify-center">
+              <div className="border border-white/20 p-4 backdrop-blur-[2px] bg-slate-950/30 text-center select-none max-w-[160px] transform scale-95 group-hover:scale-100 transition-transform duration-500">
+                <span className="font-serif text-[10px] tracking-[0.2em] text-white block uppercase">AMALTEA</span>
+                <span className="font-sans text-[6px] tracking-[0.25em] text-[#C5A880] block uppercase mt-0.5">GREEK CATERING</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Content (Right) */}
+          <div className="w-full md:w-1/2 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-6 bg-[#FAF6EE]/20 dark:bg-slate-900/30">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 text-[#C5A880]">
+                <svg className="w-6 h-3 fill-currentColor rotate-[-10deg]" viewBox="0 0 24 24">
+                  <path d="M12 21a9 9 0 0 1-5.65-2.02l.65-.76A8 8 0 0 0 12 20a8 8 0 0 0 7-4.13l.87.5A9 9 0 0 1 12 21zm-7-6.2a8.88 8.88 0 0 1-.5-2.8c0-3 1.8-5.7 4.5-6.83l.38.92A8 8 0 0 0 5.5 12a8 8 0 0 0 .42 2.5l-.92.3zM19 12a8 8 0 0 0-3.88-6.91l.38-.92c2.7 1.13 4.5 3.83 4.5 6.83a8.88 8.88 0 0 1-.5 2.8l-.92-.3a8 8 0 0 0 .42-2.5z" />
+                </svg>
+                <div className="h-[0.5px] w-12 bg-[#C5A880]/30" />
+              </div>
+
+              <h3 className="font-serif text-2xl font-semibold text-blue-955 dark:text-sky-200 uppercase tracking-wide">
+                {t('businessTitle')}
+              </h3>
+
+              <div className="flex items-center space-x-3">
+                <div className="h-[0.5px] w-6 bg-[#C5A880]/40" />
+                <span className="text-[#C5A880] text-[6px]">◆</span>
+                <div className="h-[0.5px] w-6 bg-[#C5A880]/40" />
+              </div>
+
+              {/* Subcategory Grid */}
+              <div className="grid grid-cols-1 gap-y-3.5 pt-2">
+                {businessItems.map((sub, sIdx) => {
+                  const SubIcon = sub.Icon;
+                  return (
+                    <div key={sIdx} className="flex items-start space-x-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-[#C5A880]/20 flex items-center justify-center text-[#C5A880] shrink-0 group-hover:bg-[#C5A880] group-hover:text-white group-hover:border-[#C5A880] transition-colors duration-300">
+                        <SubIcon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0 pt-1">
+                        <span className="text-[10.5px] font-sans font-bold uppercase tracking-wider text-blue-955 dark:text-sky-200 leading-tight block">
+                          {sub.title}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <motion.button
+                whileHover={{ scale: isReduced ? 1 : 1.02, boxShadow: "0 4px 15px rgba(53, 92, 125, 0.25)" }}
+                whileTap={{ scale: 0.98 }}
+                type="button"
+                onClick={() => setActiveTab('business')}
+                className="w-full px-6 py-3.5 bg-blue-800 hover:bg-blue-900 dark:bg-blue-900 dark:hover:bg-blue-950 text-white font-sans font-bold tracking-widest text-[9px] uppercase shadow-md transition-all cursor-pointer inline-flex items-center justify-center space-x-2 border border-[#C5A880]/20 hover:border-[#C5A880]/60"
+              >
+                <span>{t('exploreBusinessBtn')}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#C5A880]" />
+              </motion.button>
             </div>
           </div>
         </motion.div>

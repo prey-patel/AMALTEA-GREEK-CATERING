@@ -38,8 +38,8 @@ export function Footer({ lang, setActiveTab, t, categories = [] }: FooterProps) 
   const navMenuItems: { key: 'home' | 'about' | 'business' | 'private' | 'gallery' | 'contact'; label: string }[] = [
     { key: 'home', label: t('navHome') },
     { key: 'about', label: t('navAbout') },
-    { key: 'business', label: t('navBusiness') },
     { key: 'private', label: t('navPrivate') },
+    { key: 'business', label: t('navBusiness') },
     { key: 'gallery', label: t('navGallery') },
     { key: 'contact', label: t('navContact') },
   ];
@@ -134,27 +134,7 @@ export function Footer({ lang, setActiveTab, t, categories = [] }: FooterProps) 
           </ul>
         </motion.div>
 
-        {/* Column 3: Business Catering Links */}
-        <motion.div variants={footerColumnVariants} className="space-y-4">
-          <h4 className="font-serif uppercase text-[#355C7D] dark:text-sky-300 font-bold tracking-wider text-xs border-b border-[#C5A880]/15 dark:border-slate-800 pb-2">
-            {lang === 'pl' ? 'Catering Biznesowy' : 'Business Catering'}
-          </h4>
-          <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400 font-light">
-            {businessItems.map((item, index) => (
-              <li key={index}>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('business')}
-                  className="hover:text-[#355C7D] dark:hover:text-white text-left cursor-pointer hover-underline-draw pb-0.5"
-                >
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
-
-        {/* Column 4: Private Catering Links */}
+        {/* Column 3: Private Catering Links */}
         <motion.div variants={footerColumnVariants} className="space-y-4">
           <h4 className="font-serif uppercase text-[#355C7D] dark:text-sky-300 font-bold tracking-wider text-xs border-b border-[#C5A880]/15 dark:border-slate-800 pb-2">
             {lang === 'pl' ? 'Catering Prywatny' : 'Private Catering'}
@@ -165,6 +145,26 @@ export function Footer({ lang, setActiveTab, t, categories = [] }: FooterProps) 
                 <button
                   type="button"
                   onClick={() => setActiveTab('private')}
+                  className="hover:text-[#355C7D] dark:hover:text-white text-left cursor-pointer hover-underline-draw pb-0.5"
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+
+        {/* Column 4: Business Catering Links */}
+        <motion.div variants={footerColumnVariants} className="space-y-4">
+          <h4 className="font-serif uppercase text-[#355C7D] dark:text-sky-300 font-bold tracking-wider text-xs border-b border-[#C5A880]/15 dark:border-slate-800 pb-2">
+            {lang === 'pl' ? 'Catering Biznesowy' : 'Business Catering'}
+          </h4>
+          <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400 font-light">
+            {businessItems.map((item, index) => (
+              <li key={index}>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('business')}
                   className="hover:text-[#355C7D] dark:hover:text-white text-left cursor-pointer hover-underline-draw pb-0.5"
                 >
                   {item.label}

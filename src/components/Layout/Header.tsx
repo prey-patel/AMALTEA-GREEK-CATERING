@@ -41,8 +41,8 @@ export function Header({
   const navMenuItems: { key: 'home' | 'about' | 'business' | 'private' | 'gallery' | 'contact'; label: string }[] = [
     { key: 'home', label: t('navHome') },
     { key: 'about', label: t('navAbout') },
-    { key: 'business', label: t('navBusiness') },
     { key: 'private', label: t('navPrivate') },
+    { key: 'business', label: t('navBusiness') },
     { key: 'gallery', label: t('navGallery') },
     { key: 'contact', label: t('navContact') },
   ];
