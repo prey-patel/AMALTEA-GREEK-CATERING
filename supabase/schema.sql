@@ -284,11 +284,11 @@ CREATE POLICY "Allow public read access to page_heroes"
 -- REVOKE / GRANT PRIVILEGES (SECURITY HARDENING)
 -- =========================================================================
 
--- Revoke execute on all functions from PUBLIC to prevent anonymous RPC execution
-REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.is_owner() FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.check_last_owner() FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.log_admin_action(text, text, text, jsonb) FROM PUBLIC;
+-- Revoke execute on all functions from PUBLIC, anon, and authenticated to prevent unauthorized RPC execution
+REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.is_owner() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.check_last_owner() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.log_admin_action(text, text, text, jsonb) FROM PUBLIC, anon, authenticated;
 
 -- Grant execute only to authenticated admins and service role where required
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, service_role;
