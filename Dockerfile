@@ -1,5 +1,5 @@
 # ========================================================
-# Stage 1: Build Frontend and Compile Server
+# Stage 1: Build Frontend static assets
 # ========================================================
 FROM node:20-alpine AS builder
 WORKDIR /app
@@ -8,29 +8,25 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy source code and config
+# Copy source code and configs
 COPY . .
 
-# Build Vite frontend and compile Express server.ts with esbuild
+# Build Vite frontend assets (emits to dist/)
 RUN npm run build
 
 # ========================================================
-# Stage 2: Production Runtime
+# Stage 2: Production Nginx Server
 # ========================================================
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=3000
+FROM nginx:1.25-alpine AS runner
 
-# Install production dependencies only
-COPY package*.json ./
-RUN npm ci --only=production
+# Copy custom nginx configuration for SPA routing fallback
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built assets from builder stage
-COPY --from=builder /app/dist ./dist
+# Copy built static assets from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose production port
-EXPOSE 3000
+# Expose HTTP port
+EXPOSE 80
 
-# Start compiled Express server
-CMD ["node", "dist/server.cjs"]
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
