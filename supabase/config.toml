@@ -1,0 +1,17 @@
+# Supabase CLI Local Configuration
+
+project_id = "opwutcxkorpdradbalwl"
+
+[api]
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public"]
+
+[db]
+port = 54322
+
+[auth]
+enabled = true
+
+[storage]
+enabled = true
