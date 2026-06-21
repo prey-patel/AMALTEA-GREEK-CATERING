@@ -25,8 +25,8 @@ export default function Gallery({ lang, t, pageHeroData }: GalleryProps) {
     async function loadGallery() {
       try {
         const { data, error } = await supabase
-          .from('gallery')
-          .select('*')
+          .from('gallery_public')
+          .select('id, image_url, title, alt_text, category, description')
           .order('created_at', { ascending: false });
         if (error) throw error;
         setDbGalleryItems(data || []);
