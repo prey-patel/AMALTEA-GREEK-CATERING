@@ -64,7 +64,8 @@ CREATE TABLE IF NOT EXISTS public.gallery (
 -- 4b. gallery_public View (defense-in-depth)
 -- Exposes only display-safe columns. No file_path, no created_by.
 -- Anonymous users read from this view; admins read from the table directly.
-CREATE OR REPLACE VIEW public.gallery_public AS
+CREATE OR REPLACE VIEW public.gallery_public 
+WITH (security_invoker = true) AS
 SELECT
     id,
     image_url,
