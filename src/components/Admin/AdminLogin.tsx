@@ -32,7 +32,7 @@ export default function AdminLogin({ onLoginSuccess, lang, t: _t }: AdminLoginPr
       // Check if user is registered in admin_users
       const { data: adminData, error: adminQueryError } = await supabase
         .from('admin_users')
-        .select('role')
+        .select('role, is_active')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -41,7 +41,7 @@ export default function AdminLogin({ onLoginSuccess, lang, t: _t }: AdminLoginPr
         throw new Error(lang === 'pl' ? 'Błąd autoryzacji bazy danych.' : 'Database authorization error.');
       }
 
-      if (!adminData || adminData.role !== 'owner') {
+      if (!adminData || adminData.role !== 'owner' || !adminData.is_active) {
         await supabase.auth.signOut();
         throw new Error(lang === 'pl' ? 'Brak uprawnień administratora.' : 'Unauthorized: Administrator access required.');
       }

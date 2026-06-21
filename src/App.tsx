@@ -98,6 +98,8 @@ const DEFAULT_PAGE_HEROES: Record<string, PageHeroData> = {
 export default function App() {
   const [lang, setLang] = useState<'en' | 'pl'>('en');
   const [session, setSession] = useState<Session | null>(null);
+  const [adminVerified, setAdminVerified] = useState(false);
+  const [adminChecking, setAdminChecking] = useState(false);
   const [pageHeroes, setPageHeroes] = useState<Record<string, PageHeroData>>(DEFAULT_PAGE_HEROES);
   const [cateringCategories, setCateringCategories] = useState<CateringCategory[]>([]);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
@@ -140,14 +142,54 @@ export default function App() {
     fetchCateringCategories();
   }, []);
 
+  // Verify that the current session belongs to an active owner admin.
+  // This is the centralized admin gate — it runs on every session restore,
+  // auth state change, and login success. If verification fails, the user
+  // is signed out immediately.
+  const verifyAdminAccess = async (currentSession: Session | null) => {
+    if (!currentSession) {
+      setAdminVerified(false);
+      setAdminChecking(false);
+      return;
+    }
+
+    setAdminChecking(true);
+    try {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('role, is_active')
+        .eq('user_id', currentSession.user.id)
+        .maybeSingle();
+
+      if (error || !data || data.role !== 'owner' || !data.is_active) {
+        // Not an active owner — revoke access
+        await supabase.auth.signOut();
+        setSession(null);
+        setAdminVerified(false);
+      } else {
+        setAdminVerified(true);
+      }
+    } catch {
+      setAdminVerified(false);
+    } finally {
+      setAdminChecking(false);
+    }
+  };
+
   // Monitor Supabase session states dynamically
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       setSession(initialSession);
+      verifyAdminAccess(initialSession);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
       setSession(currentSession);
+      if (currentSession) {
+        verifyAdminAccess(currentSession);
+      } else {
+        setAdminVerified(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -504,10 +546,19 @@ export default function App() {
 
             {(activeTab === 'admin' || activeTab === 'admin_settings') && (
               <PageTransition tabKey="admin">
-                {session ? (
+                {adminChecking ? (
+                  <div className="flex items-center justify-center min-h-[60vh]">
+                    <div className="text-center space-y-4">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-800 mx-auto"></div>
+                      <p className="text-sm text-slate-500 font-mono uppercase tracking-wider">
+                        {lang === 'pl' ? 'Weryfikacja uprawnień...' : 'Verifying access...'}
+                      </p>
+                    </div>
+                  </div>
+                ) : (session && adminVerified) ? (
                   activeTab === 'admin_settings' ? (
                     <AdminSettings 
-                      onLogout={() => setSession(null)} 
+                      onLogout={() => { setSession(null); setAdminVerified(false); }} 
                       lang={lang} 
                       onBackToGallery={() => changeTab('admin')} 
                       refreshPageHeroes={fetchPageHeroes}
@@ -515,7 +566,7 @@ export default function App() {
                     />
                   ) : (
                     <AdminGallery 
-                      onLogout={() => setSession(null)} 
+                      onLogout={() => { setSession(null); setAdminVerified(false); }} 
                       lang={lang} 
                       onGoToSettings={() => changeTab('admin_settings')} 
                     />
@@ -524,6 +575,7 @@ export default function App() {
                   <AdminLogin onLoginSuccess={async () => {
                     const { data: { session: newSession } } = await supabase.auth.getSession();
                     setSession(newSession);
+                    setAdminVerified(true);
                   }} lang={lang} t={t} />
                 )}
               </PageTransition>

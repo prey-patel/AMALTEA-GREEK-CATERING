@@ -136,6 +136,30 @@ serve(async (req: Request) => {
       );
     }
 
+    // 2b. Server-side business rule validation
+    const parsedGuests = Number(guestsCount);
+    if (!Number.isFinite(parsedGuests) || parsedGuests < 1) {
+      return new Response(
+        JSON.stringify({ success: false, error: isPl ? "Liczba gości musi wynosić co najmniej 1." : "Guest count must be at least 1." }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Validate event_date is a valid date string (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(eventDate) || isNaN(new Date(eventDate).getTime())) {
+      return new Response(
+        JSON.stringify({ success: false, error: isPl ? "Nieprawidłowy format daty wydarzenia." : "Invalid event date format." }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const clientIp = 
       req.headers.get("x-real-ip") || 
       req.headers.get("x-forwarded-for")?.split(",").pop()?.trim() || 
@@ -187,31 +211,56 @@ serve(async (req: Request) => {
       );
     }
 
-    const refId = `AEG-${Math.floor(100000 + Math.random() * 900000)}`;
+    // 4. Generate reference ID and save to Database (with collision retry)
+    const MAX_INSERT_RETRIES = 3;
+    let refId = "";
+    let insertSuccess = false;
 
-    // 4. Save to Database
-    const { error: insertError } = await supabase.from("inquiries").insert([{
-      reference_id: refId,
-      full_name: fullName,
-      phone: phone,
-      email: email,
-      event_date: eventDate,
-      guests_count: Number(guestsCount),
-      event_type: eventType,
-      location: eventAddress,
-      event_time: eventTime,
-      event_duration: eventDuration || "",
-      service_requirements: serviceRequirements || "",
-      menu_preferences: menuPreferences || "",
-      additional_info: additionalInfo || "",
-      message: message || "",
-      custom_notes: "",
-      status: "new",
-      ip_address: clientIp
-    }]);
+    for (let attempt = 0; attempt < MAX_INSERT_RETRIES; attempt++) {
+      refId = `AEG-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    if (insertError) {
+      const { error: insertError } = await supabase.from("inquiries").insert([{
+        reference_id: refId,
+        full_name: fullName,
+        phone: phone,
+        email: email,
+        event_date: eventDate,
+        guests_count: parsedGuests,
+        event_type: eventType,
+        location: eventAddress,
+        event_time: eventTime,
+        event_duration: eventDuration || "",
+        service_requirements: serviceRequirements || "",
+        menu_preferences: menuPreferences || "",
+        additional_info: additionalInfo || "",
+        message: message || "",
+        custom_notes: "",
+        status: "new",
+        ip_address: clientIp
+      }]);
+
+      if (!insertError) {
+        insertSuccess = true;
+        break;
+      }
+
+      // PostgreSQL unique_violation error code = 23505
+      const isUniqueViolation = insertError.code === "23505" || 
+        (insertError.message && insertError.message.includes("duplicate key"));
+
+      if (isUniqueViolation && attempt < MAX_INSERT_RETRIES - 1) {
+        console.warn(`Reference ID collision on '${refId}', retrying (attempt ${attempt + 1}/${MAX_INSERT_RETRIES})...`);
+        continue;
+      }
+
       console.error("Supabase insert error:", insertError);
+      return new Response(JSON.stringify({ success: false, error: isPl ? "Nie udało się zapisać zapytania." : "Failed to store inquiry." }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!insertSuccess) {
       return new Response(JSON.stringify({ success: false, error: isPl ? "Nie udało się zapisać zapytania." : "Failed to store inquiry." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -1,14 +1,6 @@
 -- Supabase Database Schema, Row Level Security (RLS) Policies, Custom Functions, and Triggers
 -- Reference Project: aegean-catering-prod (opwutcxkorpdradbalwl)
 
--- Enable Row Level Security (RLS) on all public tables
-ALTER TABLE IF EXISTS public.admin_users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.audit_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.catering_categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.gallery ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.inquiries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.page_heroes ENABLE ROW LEVEL SECURITY;
-
 -- =========================================================================
 -- TABLE SCHEMAS
 -- =========================================================================
@@ -92,12 +84,12 @@ REVOKE ALL ON public.gallery FROM anon;
 CREATE TABLE IF NOT EXISTS public.inquiries (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     reference_id character varying NOT NULL UNIQUE,
-    full_name character varying NOT NULL,
-    phone character varying NOT NULL,
-    email character varying NOT NULL,
+    full_name character varying NOT NULL CONSTRAINT chk_fullname_nonempty CHECK (length(trim(full_name)) > 0),
+    phone character varying NOT NULL CONSTRAINT chk_phone_nonempty CHECK (length(trim(phone)) > 0),
+    email character varying NOT NULL CONSTRAINT chk_email_nonempty CHECK (length(trim(email)) > 0),
     event_date date NOT NULL,
-    guests_count integer NOT NULL,
-    event_type character varying NOT NULL,
+    guests_count integer NOT NULL CONSTRAINT chk_guests_positive CHECK (guests_count > 0),
+    event_type character varying NOT NULL CONSTRAINT chk_eventtype_nonempty CHECK (length(trim(event_type)) > 0),
     location character varying NOT NULL,
     custom_notes text,
     created_at timestamp with time zone NOT NULL DEFAULT (timezone('utc'::text, now())),
@@ -107,7 +99,9 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     menu_preferences character varying,
     additional_info text,
     message text,
-    status text DEFAULT 'new'::text,
+    status text DEFAULT 'new'::text CONSTRAINT chk_status_valid CHECK (
+        status IN ('new', 'admin_email_sent', 'admin_email_failed', 'contacted', 'confirmed', 'completed', 'cancelled')
+    ),
     ip_address text
 );
 
@@ -127,6 +121,20 @@ CREATE TABLE IF NOT EXISTS public.page_heroes (
 
 
 -- =========================================================================
+-- ENABLE ROW LEVEL SECURITY (after table creation)
+-- =========================================================================
+-- IMPORTANT: These must come AFTER CREATE TABLE to ensure RLS is actually
+-- activated. Running them before tables exist causes a silent no-op.
+
+ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.catering_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.gallery ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.page_heroes ENABLE ROW LEVEL SECURITY;
+
+
+-- =========================================================================
 -- CUSTOM DATABASE FUNCTIONS
 -- =========================================================================
 
@@ -135,13 +143,13 @@ CREATE TABLE IF NOT EXISTS public.page_heroes (
 CREATE OR REPLACE FUNCTION public.is_admin()
  RETURNS boolean
  LANGUAGE plpgsql
- SECURITY INVOKER
+ SECURITY DEFINER
  SET search_path TO 'public'
 AS $function$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.admin_users
-    WHERE user_id = auth.uid() AND role = 'owner' AND is_active = true
+    WHERE user_id = auth.uid() AND role IN ('admin', 'owner') AND is_active = true
   );
 END;
 $function$;
@@ -151,7 +159,7 @@ $function$;
 CREATE OR REPLACE FUNCTION public.is_owner()
  RETURNS boolean
  LANGUAGE plpgsql
- SECURITY INVOKER
+ SECURITY DEFINER
  SET search_path TO 'public'
 AS $function$
 BEGIN
@@ -254,8 +262,8 @@ CREATE POLICY "Allow admins to modify catering_categories"
     ON public.catering_categories
     FOR ALL
     TO authenticated
-    USING ((EXISTS ( SELECT 1 FROM public.admin_users WHERE ((admin_users.user_id = auth.uid()) AND (admin_users.is_active = true)) )))
-    WITH CHECK ((EXISTS ( SELECT 1 FROM public.admin_users WHERE ((admin_users.user_id = auth.uid()) AND (admin_users.is_active = true)) )));
+    USING (public.is_admin())
+    WITH CHECK (public.is_admin());
 
 CREATE POLICY "Allow public read access to catering_categories"
     ON public.catering_categories
@@ -290,8 +298,8 @@ CREATE POLICY "Allow admins to update page_heroes"
     ON public.page_heroes
     FOR UPDATE
     TO authenticated
-    USING ((EXISTS ( SELECT 1 FROM public.admin_users WHERE ((admin_users.user_id = auth.uid()) AND (admin_users.is_active = true)) )))
-    WITH CHECK ((EXISTS ( SELECT 1 FROM public.admin_users WHERE ((admin_users.user_id = auth.uid()) AND (admin_users.is_active = true)) )));
+    USING (public.is_admin())
+    WITH CHECK (public.is_admin());
 
 CREATE POLICY "Allow public read access to page_heroes"
     ON public.page_heroes

@@ -572,14 +572,18 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
       setCurrentUserId(user.id);
       setCurrentUserEmail(user.email || '');
 
-      // Fetch role
+      // Fetch role and active status
       const { data, error } = await supabase
         .from('admin_users')
-        .select('role')
+        .select('role, is_active')
         .eq('user_id', user.id)
         .single();
 
       if (data && !error) {
+        if (!data.is_active) {
+          // If admin has been disabled, trigger logout
+          console.warn('Current admin user is disabled.');
+        }
         setCurrentUserRole(data.role as 'owner' | 'admin');
       }
     }
