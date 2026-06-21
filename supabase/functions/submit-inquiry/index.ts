@@ -7,7 +7,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY") || "";
 const BREVO_SENDER_EMAIL = Deno.env.get("BREVO_SENDER_EMAIL") || "";
 const BREVO_SENDER_NAME = Deno.env.get("BREVO_SENDER_NAME") || "Amaltea Catering";
-const ADMIN_INQUIRY_EMAIL = Deno.env.get("ADMIN_INQUIRY_EMAIL") || "catering@amaltea.com.pl,preyasvsn@gmail.com";
+const ADMIN_INQUIRY_EMAIL = Deno.env.get("ADMIN_INQUIRY_EMAIL") || "catering@amaltea.com.pl";
 
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get("origin") || "";
@@ -339,7 +339,7 @@ serve(async (req: Request) => {
 </html>
         `;
 
-        const rawAdminEmail = ADMIN_INQUIRY_EMAIL || "catering@amaltea.com.pl,preyasvsn@gmail.com";
+        const rawAdminEmail = ADMIN_INQUIRY_EMAIL;
         const adminEmails = rawAdminEmail.split(",")
           .map(e => e.trim())
           .filter(e => e.length > 0);
@@ -539,7 +539,32 @@ serve(async (req: Request) => {
         );
       }
     } else {
-      console.warn("Brevo API key or sender email is missing. Emails not sent.");
+      console.error("Brevo API key or sender email is missing. Emails not sent.");
+      
+      // Update database with status
+      const { error: updateError } = await supabase
+        .from("inquiries")
+        .update({ 
+          status: "admin_email_failed", 
+          custom_notes: "Admin email failed: Brevo API key or sender email configuration env vars missing in edge runtime." 
+        })
+        .eq("reference_id", refId);
+      if (updateError) {
+        console.error("Failed to update status to admin_email_failed:", updateError);
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: isPl 
+            ? "Zapytanie zostało zapisane w bazie, lecz usługa powiadomień e-mail nie jest skonfigurowana." 
+            : "Inquiry saved in database, but the email notification service is not configured." 
+        }), 
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
     const successMsg = isPl 
