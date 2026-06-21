@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS public.page_heroes (
 CREATE OR REPLACE FUNCTION public.is_admin()
  RETURNS boolean
  LANGUAGE plpgsql
- SECURITY DEFINER
+ SECURITY INVOKER
  SET search_path TO 'public'
 AS $function$
 BEGIN
@@ -131,7 +131,7 @@ $function$;
 CREATE OR REPLACE FUNCTION public.is_owner()
  RETURNS boolean
  LANGUAGE plpgsql
- SECURITY DEFINER
+ SECURITY INVOKER
  SET search_path TO 'public'
 AS $function$
 BEGIN
@@ -281,14 +281,30 @@ CREATE POLICY "Allow public read access to page_heroes"
 
 
 -- =========================================================================
+-- REVOKE / GRANT PRIVILEGES (SECURITY HARDENING)
+-- =========================================================================
+
+-- Revoke execute on all functions from PUBLIC to prevent anonymous RPC execution
+REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.is_owner() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.check_last_owner() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.log_admin_action(text, text, text, jsonb) FROM PUBLIC;
+
+-- Grant execute only to authenticated admins and service role where required
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.log_admin_action(text, text, text, jsonb) TO authenticated, service_role;
+
+
+-- =========================================================================
 -- STORAGE BUCKETS & OBJECT POLICIES (REFERENCE)
 -- =========================================================================
 
 -- Configured Storage Bucket: 'gallery' (Public access enabled)
 
--- Policy 1: "Allow public read access to gallery"
--- Action: SELECT, Role: public
--- Definition: (bucket_id = 'gallery'::text)
+-- Policy 1: (DROPPED for security hardening)
+-- "Allow public read access to gallery" has been dropped to prevent anonymous
+-- clients from listing all files in the bucket. Accessing files via direct
+-- public URLs does not require SELECT policies.
 
 -- Policy 2: "Allow admin to upload to gallery"
 -- Action: INSERT, Role: authenticated
