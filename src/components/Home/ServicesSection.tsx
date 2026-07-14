@@ -237,7 +237,7 @@ export default function ServicesSection({ lang, setActiveTab, t, categories, isR
           {/* Image (Left) */}
           <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-auto md:min-h-[420px] relative overflow-hidden shrink-0">
             <img
-              src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=70&w=800"
+              src="/business-catering.png"
               alt="Business conference dining hall"
               loading="lazy"
               width="600"
