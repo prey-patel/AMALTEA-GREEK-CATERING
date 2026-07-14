@@ -57,6 +57,7 @@ function SplitText({ text, className = "", delay = 0 }: { text: string; classNam
       initial="hidden"
       animate="visible"
       className={`inline-block perspective-[800px] ${className}`}
+      translate="no"
     >
       {words.map((word, wordIdx) => (
         <span key={wordIdx} className="inline-block whitespace-nowrap mr-[0.25em] py-1">
