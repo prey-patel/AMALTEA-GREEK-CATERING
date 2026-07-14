@@ -104,6 +104,9 @@ export default function App() {
   const [cateringCategories, setCateringCategories] = useState<CateringCategory[]>([]);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
 
+  // Fixed storage path for Terms & Conditions PDF (replaceable from Admin Panel > Documents)
+  const termsPdfUrl = supabase.storage.from('gallery').getPublicUrl('documents/terms_conditions.pdf').data.publicUrl;
+
   const fetchPageHeroes = async () => {
     try {
       const { data, error } = await supabase
@@ -584,7 +587,7 @@ export default function App() {
         </React.Suspense>
       </main>
 
-      <Footer lang={lang} setActiveTab={changeTab} t={t} categories={cateringCategories} />
+      <Footer lang={lang} setActiveTab={changeTab} t={t} categories={cateringCategories} onOpenTermsPdf={() => setSelectedPdfUrl(termsPdfUrl + '?v=' + Date.now())} />
 
       {selectedPdfUrl && (
         <FlipbookModal

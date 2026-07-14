@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { 
   ArrowLeft, LogOut, CheckCircle, AlertTriangle, 
   Settings, Key, Mail, UserPlus, RefreshCw, Trash2, 
-  UserX, UserCheck, Eye, Upload,
+  UserX, UserCheck, Eye, Upload, FileText,
   Briefcase, Award, Users, Utensils, Heart, Sparkles, 
   Calendar, TrendingUp, Coins, Coffee, Globe, Building, 
   Cake, Gift, Music, Smile, Home, Bookmark, Compass, 
@@ -35,7 +35,7 @@ interface AdminUser {
 }
 
 export default function AdminSettings({ onLogout, lang, onBackToGallery, refreshPageHeroes, refreshCategories }: AdminSettingsProps) {
-  const [activeSubTab, setActiveSubTab] = useState<'account' | 'admins' | 'heroes' | 'categories'>('account');
+  const [activeSubTab, setActiveSubTab] = useState<'account' | 'admins' | 'heroes' | 'categories' | 'documents'>('account');
   const [currentUserEmail, setCurrentUserEmail] = useState<string>('');
   const [currentUserRole, setCurrentUserRole] = useState<'owner' | 'admin' | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string>('');
@@ -93,6 +93,14 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
   const [pdfUploadProgress, setPdfUploadProgress] = useState(0);
   const categoryPdfInputRef = React.useRef<HTMLInputElement>(null);
 
+  // Documents (Terms & Conditions) upload state & ref
+  const [termsUploading, setTermsUploading] = useState(false);
+  const [termsUploadProgress, setTermsUploadProgress] = useState(0);
+  const [termsFileExists, setTermsFileExists] = useState(false);
+  const [termsLastChecked, setTermsLastChecked] = useState<string>('');
+  const termsFileInputRef = React.useRef<HTMLInputElement>(null);
+  const TERMS_STORAGE_PATH = 'documents/terms_conditions.pdf';
+
   // Status Message
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -139,6 +147,12 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
   useEffect(() => {
     if (activeSubTab === 'categories') {
       fetchCateringCategoriesList();
+    }
+  }, [activeSubTab]);
+
+  useEffect(() => {
+    if (activeSubTab === 'documents') {
+      checkTermsFileExists();
     }
   }, [activeSubTab]);
 
@@ -562,6 +576,103 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
       setPdfUploading(false);
       if (categoryPdfInputRef.current) {
         categoryPdfInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Check if Terms & Conditions PDF exists in storage
+  const checkTermsFileExists = async () => {
+    try {
+      const { data } = await supabase.storage
+        .from('gallery')
+        .list('documents', { search: 'terms_conditions.pdf' });
+      const found = !!(data && data.length > 0 && data.some(f => f.name === 'terms_conditions.pdf'));
+      setTermsFileExists(found);
+      if (found) {
+        const fileInfo = data?.find(f => f.name === 'terms_conditions.pdf');
+        if (fileInfo?.updated_at) {
+          setTermsLastChecked(new Date(fileInfo.updated_at).toLocaleString());
+        } else if (fileInfo?.created_at) {
+          setTermsLastChecked(new Date(fileInfo.created_at).toLocaleString());
+        }
+      }
+    } catch (err) {
+      console.error('Error checking terms file:', err);
+    }
+  };
+
+  // Upload or replace Terms & Conditions PDF
+  const handleTermsPdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      setStatusMessage({
+        type: 'error',
+        text: lang === 'pl' ? 'Tylko pliki PDF są akceptowane.' : 'Only PDF files are accepted.'
+      });
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      setStatusMessage({
+        type: 'error',
+        text: lang === 'pl' ? 'Rozmiar pliku nie może przekraczać 15MB.' : 'File size cannot exceed 15MB.'
+      });
+      return;
+    }
+
+    setTermsUploading(true);
+    setTermsUploadProgress(20);
+    setStatusMessage(null);
+
+    try {
+      setTermsUploadProgress(50);
+
+      const { error: storageError } = await supabase.storage
+        .from('gallery')
+        .upload(TERMS_STORAGE_PATH, file, {
+          cacheControl: '60',
+          upsert: true
+        });
+
+      if (storageError) throw storageError;
+      setTermsUploadProgress(80);
+
+      // Log the admin action
+      try {
+        await supabase.rpc('log_admin_action', {
+          action: 'upload_terms_pdf',
+          target_table: 'storage',
+          target_id: TERMS_STORAGE_PATH,
+          metadata: { filename: file.name, size: file.size }
+        });
+      } catch {
+        // Non-critical: audit log failure should not block upload
+      }
+
+      setTermsUploadProgress(100);
+      setTermsFileExists(true);
+      setTermsLastChecked(new Date().toLocaleString());
+
+      setStatusMessage({
+        type: 'success',
+        text: lang === 'pl'
+          ? 'Regulamin PDF został pomyślnie przesłany i jest już aktywny na stronie.'
+          : 'Terms & Conditions PDF uploaded successfully and is now live on the website.'
+      });
+    } catch (err) {
+      console.error('Terms PDF upload error:', err);
+      const errMsg = err instanceof Error ? err.message : String(err);
+      setStatusMessage({
+        type: 'error',
+        text: errMsg || (lang === 'pl' ? 'Wystąpił błąd podczas przesyłania regulaminu.' : 'Failed to upload Terms PDF.')
+      });
+    } finally {
+      setTermsUploading(false);
+      setTermsUploadProgress(0);
+      if (termsFileInputRef.current) {
+        termsFileInputRef.current.value = '';
       }
     }
   };
@@ -992,6 +1103,17 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
           }`}
         >
           {lang === 'pl' ? 'Oferta cateringowa' : 'Catering Categories'}
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('documents')}
+          className={`py-3 px-6 font-bold uppercase tracking-wider cursor-pointer border-b-2 transition-all ${
+            activeSubTab === 'documents'
+              ? 'border-[#C5A880] text-[#C5A880] dark:text-[#E2D1B6]'
+              : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+          }`}
+        >
+          {lang === 'pl' ? 'Dokumenty' : 'Documents'}
         </button>
         
         {(currentUserRole === 'owner' || currentUserRole === 'admin') && (
@@ -2011,6 +2133,119 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
                   <span>{lang === 'pl' ? 'Usuń' : 'Delete'}</span>
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUBTAB 5: Documents (Terms & Conditions PDF) */}
+      {activeSubTab === 'documents' && (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded shadow-sm space-y-6">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-4 space-y-1">
+            <h2 className="font-serif text-lg font-bold text-blue-950 dark:text-slate-100 uppercase tracking-wide flex items-center space-x-2">
+              <FileText className="w-4 h-4 text-[#C5A880]" />
+              <span>{lang === 'pl' ? 'Dokumenty strony' : 'Site Documents'}</span>
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-light">
+              {lang === 'pl'
+                ? 'Zarządzaj dokumentami PDF wyświetlanymi na stronie. Przesłanie nowego pliku automatycznie zastąpi poprzedni.'
+                : 'Manage PDF documents displayed on the website. Uploading a new file automatically replaces the previous one.'}
+            </p>
+          </div>
+
+          {/* Terms & Conditions Card */}
+          <div className="border border-slate-200 dark:border-slate-800 rounded p-5 space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h3 className="font-serif text-sm font-bold text-blue-950 dark:text-slate-100 uppercase tracking-wide">
+                  {lang === 'pl' ? 'Regulamin i Warunki (PDF)' : 'Terms & Conditions (PDF)'}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-light">
+                  {lang === 'pl'
+                    ? 'Ten dokument jest widoczny po kliknięciu "Regulamin i warunki" w stopce strony.'
+                    : 'This document is shown when visitors click "Terms & Conditions" in the website footer.'}
+                </p>
+              </div>
+              <div className={`px-2 py-1 text-[10px] font-mono uppercase tracking-wider rounded ${
+                termsFileExists
+                  ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                  : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+              }`}>
+                {termsFileExists
+                  ? (lang === 'pl' ? 'Aktywny' : 'Active')
+                  : (lang === 'pl' ? 'Brak pliku' : 'No file')}
+              </div>
+            </div>
+
+            {termsFileExists && termsLastChecked && (
+              <div className="flex items-center space-x-2 text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                <CheckCircle className="w-3 h-3 text-emerald-500" />
+                <span>{lang === 'pl' ? 'Ostatnia aktualizacja:' : 'Last updated:'} {termsLastChecked}</span>
+              </div>
+            )}
+
+            {termsFileExists && (
+              <div className="flex items-center space-x-3">
+                <a
+                  href={`${supabase.storage.from('gallery').getPublicUrl(TERMS_STORAGE_PATH).data.publicUrl}?v=${Date.now()}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1.5 text-xs text-[#355C7D] dark:text-sky-400 hover:underline font-medium"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{lang === 'pl' ? 'Podgląd aktualnego PDF' : 'Preview current PDF'}</span>
+                </a>
+              </div>
+            )}
+
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-3">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
+                {lang === 'pl'
+                  ? (termsFileExists ? 'Zastąp plik PDF' : 'Prześlij plik PDF')
+                  : (termsFileExists ? 'Replace PDF file' : 'Upload PDF file')}
+              </label>
+              <div className="flex items-center space-x-3">
+                <input
+                  ref={termsFileInputRef}
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  onChange={handleTermsPdfUpload}
+                  disabled={termsUploading}
+                  className="hidden"
+                  id="terms-pdf-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => termsFileInputRef.current?.click()}
+                  disabled={termsUploading}
+                  className="inline-flex items-center space-x-2 px-4 py-2.5 bg-[#355C7D] dark:bg-blue-800 hover:bg-[#2c4e6b] dark:hover:bg-blue-700 text-white font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>
+                    {termsUploading
+                      ? (lang === 'pl' ? 'Przesyłanie...' : 'Uploading...')
+                      : (lang === 'pl' ? 'Wybierz plik PDF' : 'Choose PDF File')}
+                  </span>
+                </button>
+              </div>
+
+              {termsUploading && (
+                <div className="space-y-1">
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5">
+                    <div
+                      className="bg-[#C5A880] h-1.5 rounded-full transition-all duration-300"
+                      style={{ width: `${termsUploadProgress}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-400">{termsUploadProgress}%</span>
+                </div>
+              )}
+
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-light">
+                {lang === 'pl'
+                  ? 'Akceptowane formaty: PDF. Maksymalny rozmiar: 15MB. Plik zostanie natychmiast opublikowany.'
+                  : 'Accepted formats: PDF. Maximum size: 15MB. The file will be published immediately.'}
+              </p>
             </div>
           </div>
         </div>

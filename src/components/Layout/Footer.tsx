@@ -19,9 +19,10 @@ interface FooterProps {
   setActiveTab: (tab: 'home' | 'about' | 'business' | 'private' | 'gallery' | 'contact') => void;
   t: (key: string) => string;
   categories?: CateringCategory[];
+  onOpenTermsPdf?: () => void;
 }
 
-export function Footer({ lang, setActiveTab, t, categories = [] }: FooterProps) {
+export function Footer({ lang, setActiveTab, t, categories = [], onOpenTermsPdf }: FooterProps) {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
 
@@ -220,7 +221,7 @@ export function Footer({ lang, setActiveTab, t, categories = [] }: FooterProps) 
           <span>•</span>
           <button
             type="button"
-            onClick={() => setIsTermsOpen(true)}
+            onClick={() => onOpenTermsPdf ? onOpenTermsPdf() : setIsTermsOpen(true)}
             className="hover:text-[#355C7D] dark:hover:text-slate-350 cursor-pointer hover-underline-draw pb-0.5"
           >
             {lang === 'pl' ? 'Regulamin i warunki' : 'Terms & Conditions'}
