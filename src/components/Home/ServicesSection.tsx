@@ -209,7 +209,7 @@ export default function ServicesSection({ lang, setActiveTab, t, categories, isR
           {/* Image (Right) - order-1 md:order-2 to swap on desktop */}
           <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-auto md:min-h-[420px] relative overflow-hidden shrink-0 order-1 md:order-2">
             <img
-              src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&q=70&w=800"
+              src="/private-catering.png"
               alt="Outdoor private candlelit gathering"
               loading="lazy"
               width="600"
