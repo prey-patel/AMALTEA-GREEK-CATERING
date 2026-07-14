@@ -469,7 +469,7 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
         .from('gallery')
         .upload(uniqueFilename, file, {
           cacheControl: '3600',
-          upsert: true
+          upsert: false
         });
 
       if (storageError) throw storageError;
