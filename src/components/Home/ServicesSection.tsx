@@ -216,13 +216,6 @@ export default function ServicesSection({ lang, setActiveTab, t, categories, isR
               height="450"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            {/* project watermark logo overlay */}
-            <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/15 transition-colors duration-500 flex items-center justify-center">
-              <div className="border border-white/20 p-4 backdrop-blur-[2px] bg-slate-950/30 text-center select-none max-w-[160px] transform scale-95 group-hover:scale-100 transition-transform duration-500">
-                <span className="font-serif text-[10px] tracking-[0.2em] text-white block uppercase">AMALTEA</span>
-                <span className="font-sans text-[6px] tracking-[0.25em] text-[#C5A880] block uppercase mt-0.5">GREEK CATERING</span>
-              </div>
-            </div>
           </div>
         </motion.div>
 
@@ -244,13 +237,6 @@ export default function ServicesSection({ lang, setActiveTab, t, categories, isR
               height="450"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            {/* project watermark logo overlay */}
-            <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/15 transition-colors duration-500 flex items-center justify-center">
-              <div className="border border-white/20 p-4 backdrop-blur-[2px] bg-slate-950/30 text-center select-none max-w-[160px] transform scale-95 group-hover:scale-100 transition-transform duration-500">
-                <span className="font-serif text-[10px] tracking-[0.2em] text-white block uppercase">AMALTEA</span>
-                <span className="font-sans text-[6px] tracking-[0.25em] text-[#C5A880] block uppercase mt-0.5">GREEK CATERING</span>
-              </div>
-            </div>
           </div>
 
           {/* Content (Right) */}
