@@ -96,7 +96,7 @@ const DEFAULT_PAGE_HEROES: Record<string, PageHeroData> = {
 };
 
 export default function App() {
-  const [lang, setLang] = useState<'en' | 'pl'>('en');
+  const [lang, setLang] = useState<'en' | 'pl'>('pl');
   const [session, setSession] = useState<Session | null>(null);
   const [adminVerified, setAdminVerified] = useState(false);
   const [adminChecking, setAdminChecking] = useState(false);
