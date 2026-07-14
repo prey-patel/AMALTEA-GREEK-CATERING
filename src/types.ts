@@ -424,10 +424,6 @@ export interface CateringCategory {
 }
 
 export function getOptimizedImageUrl(url: string, _width = 1200): string {
-  // Map the old database/default Supabase home hero URL to the new local asset
-  if (url && (url.includes('hero_home_1781269881317_8tyqhz.png') || url === '/hero-home.png')) {
-    return '/hero-home.png';
-  }
   // Disabled image transformations for Free Plan compatibility
   return url;
 }
