@@ -193,7 +193,7 @@ export function Footer({ lang, setActiveTab, t, categories = [], onOpenTermsPdf 
               <motion.div whileHover={{ scale: 1.1 }} className="shrink-0">
                 <Phone className="w-4 h-4 text-[#355C7D] dark:text-sky-300 mt-0.5 group-hover:text-[#2c4e6b] dark:group-hover:text-white transition-colors" />
               </motion.div>
-              <span className="group-hover:text-[#355C7D] dark:group-hover:text-slate-200 transition-colors font-mono">+48 512 123 456</span>
+              <span className="group-hover:text-[#355C7D] dark:group-hover:text-slate-200 transition-colors font-mono">+48 503 10 20 90</span>
             </li>
             <li className="flex items-start space-x-2 group">
               <motion.div whileHover={{ scale: 1.1 }} className="shrink-0">

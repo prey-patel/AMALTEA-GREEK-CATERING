@@ -171,25 +171,19 @@ export default function Contact({
                 </h3>
               </div>
               
-              <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                <p className="font-serif text-base font-bold text-blue-955 dark:text-slate-100">Anna Baranowska</p>
-                <p className="text-[10px] text-amber-600 dark:text-amber-500 font-mono uppercase tracking-wider font-bold">
-                  {lang === 'pl' ? 'Manager ds. Cateringu i Administracji' : 'Catering & Administration Manager'}
+              <div className="space-y-3 font-sans text-xs pt-1">
+                <p className="flex items-center space-x-2">
+                  <span className="font-semibold text-slate-500">{lang === 'pl' ? 'E-mail:' : 'E-mail:'}</span>
+                  <a href="mailto:catering@amaltea.com.pl" className="text-blue-800 dark:text-sky-400 hover:underline">
+                    catering@amaltea.com.pl
+                  </a>
                 </p>
-                <div className="pt-2 space-y-2 font-sans text-xs">
-                  <p className="flex items-center space-x-2">
-                    <span className="font-semibold text-slate-500">{lang === 'pl' ? 'E-mail:' : 'E-mail:'}</span>
-                    <a href="mailto:catering@amaltea.com.pl" className="text-blue-800 dark:text-sky-400 hover:underline">
-                      catering@amaltea.com.pl
-                    </a>
-                  </p>
-                  <p className="flex items-center space-x-2">
-                    <span className="font-semibold text-slate-500">{lang === 'pl' ? 'Telefon:' : 'Phone:'}</span>
-                    <a href="tel:+48512123456" className="text-blue-800 dark:text-sky-400 hover:underline font-mono">
-                      +48 512 123 456
-                    </a>
-                  </p>
-                </div>
+                <p className="flex items-center space-x-2">
+                  <span className="font-semibold text-slate-500">{lang === 'pl' ? 'Telefon:' : 'Phone:'}</span>
+                  <a href="tel:+48503102090" className="text-blue-800 dark:text-sky-400 hover:underline font-mono">
+                    +48 503 10 20 90
+                  </a>
+                </p>
               </div>
             </div>
 
@@ -217,10 +211,10 @@ export default function Contact({
                 <span className="font-serif text-xs font-bold uppercase text-blue-955 dark:text-sky-400 block">
                   {lang === 'pl' ? 'Obszar Dostaw Warszawa i Okolice' : 'Warsaw & Surroundings Delivery Region'}
                 </span>
-                <p className="text-slate-500 dark:text-slate-400 text-[10px] leading-relaxed font-light">
+                <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed font-light">
                   {lang === 'pl'
-                    ? 'Nasze klimatyzowane pojazdy dostarczają idealnie przygotowane meze i ciepłe grillowe menu w promieniu 150 km od centrum Warszawy.'
-                    : 'Our refrigerated kitchen trucks deliver fully curated menus anywhere within a 150km corridor around central Warsaw.'}
+                    ? 'Dostarczamy na terenie całej Warszawy i okolic.'
+                    : 'We deliver throughout Warsaw and the surrounding areas.'}
                 </p>
               </div>
             </div>

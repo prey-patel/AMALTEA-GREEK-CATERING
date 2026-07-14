@@ -482,7 +482,7 @@ serve(async (req: Request) => {
 
     <div class="footer">
       <p>AMALTEA SP. Z O.O. SP. K. | Al. Jana Pawła II 29, Warsaw, Poland</p>
-      <p>catering@amaltea.com.pl | +48 512 123 456</p>
+      <p>catering@amaltea.com.pl | +48 503 10 20 90</p>
     </div>
   </div>
 </body>
