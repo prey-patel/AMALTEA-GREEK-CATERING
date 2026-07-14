@@ -545,7 +545,7 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
         .from('gallery')
         .upload(`menus/${uniqueFilename}`, file, {
           cacheControl: '3600',
-          upsert: true
+          upsert: false
         });
 
       if (storageError) throw storageError;
@@ -628,13 +628,22 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
     setStatusMessage(null);
 
     try {
-      setTermsUploadProgress(50);
+      setTermsUploadProgress(40);
+
+      // Delete the existing file first (upsert: true requires SELECT/UPDATE RLS permissions, which are restricted)
+      try {
+        await supabase.storage.from('gallery').remove([TERMS_STORAGE_PATH]);
+      } catch (err) {
+        console.warn('Non-critical: Failed to remove old terms file before replacement:', err);
+      }
+
+      setTermsUploadProgress(60);
 
       const { error: storageError } = await supabase.storage
         .from('gallery')
         .upload(TERMS_STORAGE_PATH, file, {
           cacheControl: '60',
-          upsert: true
+          upsert: false
         });
 
       if (storageError) throw storageError;
