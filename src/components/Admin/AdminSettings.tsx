@@ -580,24 +580,25 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
     }
   };
 
-  // Check if Terms & Conditions PDF exists in storage
+  // Check if Terms & Conditions PDF exists in storage (via public URL HEAD request)
   const checkTermsFileExists = async () => {
     try {
-      const { data } = await supabase.storage
+      const { data: { publicUrl } } = supabase.storage
         .from('gallery')
-        .list('documents', { search: 'terms_conditions.pdf' });
-      const found = !!(data && data.length > 0 && data.some(f => f.name === 'terms_conditions.pdf'));
+        .getPublicUrl(TERMS_STORAGE_PATH);
+
+      const response = await fetch(publicUrl + '?v=' + Date.now(), { method: 'HEAD' });
+      const found = response.ok;
       setTermsFileExists(found);
       if (found) {
-        const fileInfo = data?.find(f => f.name === 'terms_conditions.pdf');
-        if (fileInfo?.updated_at) {
-          setTermsLastChecked(new Date(fileInfo.updated_at).toLocaleString());
-        } else if (fileInfo?.created_at) {
-          setTermsLastChecked(new Date(fileInfo.created_at).toLocaleString());
+        const lastModified = response.headers.get('last-modified');
+        if (lastModified) {
+          setTermsLastChecked(new Date(lastModified).toLocaleString());
         }
       }
     } catch (err) {
       console.error('Error checking terms file:', err);
+      setTermsFileExists(false);
     }
   };
 
