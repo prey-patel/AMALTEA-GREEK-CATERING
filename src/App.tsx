@@ -103,6 +103,12 @@ export default function App() {
   const [pageHeroes, setPageHeroes] = useState<Record<string, PageHeroData>>(DEFAULT_PAGE_HEROES);
   const [cateringCategories, setCateringCategories] = useState<CateringCategory[]>([]);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
+  const [selectedPdfTitle, setSelectedPdfTitle] = useState<string | null>(null);
+
+  const openMenuPdf = (url: string) => {
+    setSelectedPdfUrl(url);
+    setSelectedPdfTitle(lang === 'pl' ? 'Karta Menu' : 'Menu Book');
+  };
 
   // Fixed storage path for Terms & Conditions PDF (replaceable from Admin Panel > Documents)
   const termsPdfUrl = supabase.storage.from('gallery').getPublicUrl('documents/terms_conditions.pdf').data.publicUrl;
@@ -478,11 +484,11 @@ export default function App() {
             {activeTab === 'business' && (
               hasNavigated ? (
                 <PageTransition tabKey="business">
-                  <Business lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.business} categories={cateringCategories.filter(c => c.page === 'business')} onOpenMenuPdf={setSelectedPdfUrl} />
+                  <Business lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.business} categories={cateringCategories.filter(c => c.page === 'business')} onOpenMenuPdf={openMenuPdf} />
                 </PageTransition>
               ) : (
                 <div key="first-business">
-                  <Business lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.business} categories={cateringCategories.filter(c => c.page === 'business')} onOpenMenuPdf={setSelectedPdfUrl} />
+                  <Business lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.business} categories={cateringCategories.filter(c => c.page === 'business')} onOpenMenuPdf={openMenuPdf} />
                 </div>
               )
             )}
@@ -490,11 +496,11 @@ export default function App() {
             {activeTab === 'private' && (
               hasNavigated ? (
                 <PageTransition tabKey="private">
-                  <Private lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.private} categories={cateringCategories.filter(c => c.page === 'private')} onOpenMenuPdf={setSelectedPdfUrl} />
+                  <Private lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.private} categories={cateringCategories.filter(c => c.page === 'private')} onOpenMenuPdf={openMenuPdf} />
                 </PageTransition>
               ) : (
                 <div key="first-private">
-                  <Private lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.private} categories={cateringCategories.filter(c => c.page === 'private')} onOpenMenuPdf={setSelectedPdfUrl} />
+                  <Private lang={lang} setActiveTab={changeTab} t={t} pageHeroData={pageHeroes.private} categories={cateringCategories.filter(c => c.page === 'private')} onOpenMenuPdf={openMenuPdf} />
                 </div>
               )
             )}
@@ -587,14 +593,18 @@ export default function App() {
         </React.Suspense>
       </main>
 
-      <Footer lang={lang} setActiveTab={changeTab} t={t} categories={cateringCategories} onOpenTermsPdf={() => setSelectedPdfUrl(termsPdfUrl + '?v=' + Date.now())} />
+      <Footer lang={lang} setActiveTab={changeTab} t={t} categories={cateringCategories} onOpenTermsPdf={() => {
+        setSelectedPdfUrl(termsPdfUrl + '?v=' + Date.now());
+        setSelectedPdfTitle(lang === 'pl' ? 'Regulamin i warunki' : 'Terms & Conditions');
+      }} />
 
       {selectedPdfUrl && (
         <FlipbookModal
           lang={lang}
           pdfUrl={selectedPdfUrl}
           isOpen={!!selectedPdfUrl}
-          onClose={() => setSelectedPdfUrl(null)}
+          onClose={() => { setSelectedPdfUrl(null); setSelectedPdfTitle(null); }}
+          title={selectedPdfTitle || undefined}
         />
       )}
     </div>

@@ -12,6 +12,7 @@ interface FlipbookModalProps {
   pdfUrl: string;
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
 }
 
 // Dynamically load PDF.js from cdnjs
@@ -35,7 +36,7 @@ const loadPdfJs = (): Promise<any> => {
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export function FlipbookModal({ lang, pdfUrl, isOpen, onClose }: FlipbookModalProps) {
+export function FlipbookModal({ lang, pdfUrl, isOpen, onClose, title }: FlipbookModalProps) {
   const [loading, setLoading] = useState(true);
   const [loadingStatus, setLoadingStatus] = useState('');
   const [pages, setPages] = useState<string[]>([]);
@@ -180,7 +181,7 @@ export function FlipbookModal({ lang, pdfUrl, isOpen, onClose }: FlipbookModalPr
         <div className="flex justify-between items-center bg-slate-900/60 border border-slate-800 px-4 py-3 shadow-lg backdrop-blur-sm z-10">
           <div className="flex items-center space-x-3">
             <span className="font-serif text-xs font-bold tracking-widest text-[#C5A880] uppercase">
-              {lang === 'pl' ? 'Karta Menu' : 'Menu Book'}
+              {title || (lang === 'pl' ? 'Karta Menu' : 'Menu Book')}
             </span>
           </div>
 
