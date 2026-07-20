@@ -363,10 +363,6 @@ const RestaurantCard: React.FC<{ rest: RestaurantInfo; idx: number; lang: 'en' |
 
         {/* Floating Lens Flare Glow overlay */}
         <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-amber-400/25 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-700 z-10" />
-
-        <div className="absolute top-4 left-4 bg-amber-600/90 dark:bg-amber-600/75 backdrop-blur-sm text-white font-mono text-[9px] font-bold py-1.5 px-3 uppercase tracking-wider rounded z-20">
-          {rest.badge}
-        </div>
       </div>
 
       <div className="p-6 flex-grow space-y-3 relative z-10" style={{ transform: 'translateZ(25px)' }}>
