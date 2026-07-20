@@ -254,7 +254,7 @@ export const RESTAURANTS_PL: RestaurantInfo[] = [
     name: 'Paros',
     slogan: 'GREEK RESTAURANT & BAR',
     description: '',
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=70&w=800',
+    image: '/paros.jpg',
     badge: 'WARSZAWSKA RESTAURACJA SIOSTRZANA',
     website: 'https://paros-restauracja.pl/',
     address: 'Al. Jerozolimskie 65/79, 00-698 Warszawa'
