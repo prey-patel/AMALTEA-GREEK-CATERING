@@ -92,7 +92,7 @@ export const RESTAURANTS: RestaurantInfo[] = [
     name: 'Mykonos',
     slogan: 'GREEK RESTAURANT & BAR',
     description: '',
-    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=70&w=800',
+    image: '/mykonos.jpg',
     badge: 'ISLAND LUXURY CLASS',
     website: 'https://mykonos-restauracja.pl/',
     address: 'Grzybowska 62, 00-844 Warszawa'
