@@ -82,7 +82,7 @@ export const RESTAURANTS: RestaurantInfo[] = [
     name: 'El Greco',
     slogan: 'GREEK RESTAURANT & BAR',
     description: '',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=70&w=800',
+    image: '/el-greco.jpg',
     badge: 'CULINARY EXCELLENCE',
     website: 'https://elgreco-restauracja.pl/en/home/',
     address: 'al. Jana Pawła II 29, 00-867 Warszawa'
