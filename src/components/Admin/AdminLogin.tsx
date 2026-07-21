@@ -13,6 +13,12 @@ export default function AdminLogin({ onLoginSuccess, lang, t: _t }: AdminLoginPr
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [showForgot, setShowForgot] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -67,6 +73,27 @@ export default function AdminLogin({ onLoginSuccess, lang, t: _t }: AdminLoginPr
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    setResetError(null);
+    setResetSent(false);
+
+    try {
+      const { error: resetErr } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: window.location.origin,
+      });
+
+      if (resetErr) throw resetErr;
+
+      setResetSent(true);
+    } catch (err: unknown) {
+      setResetError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-[75vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-[#FAF8F5] dark:bg-slate-900 border border-[#C5A880]/30 p-8 rounded-lg shadow-xl relative overflow-hidden">
@@ -91,60 +118,125 @@ export default function AdminLogin({ onLoginSuccess, lang, t: _t }: AdminLoginPr
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="rounded-md space-y-4">
+        {!showForgot ? (
+          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+            <div className="rounded-md space-y-4">
+              <div>
+                <label htmlFor="email-address" className="font-mono text-xs uppercase tracking-wider text-[#C5A880] block mb-1.5">
+                  {lang === 'pl' ? 'Email Administratora' : 'Admin Email'}
+                </label>
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#C5A880] focus:border-[#C5A880] text-sm"
+                  placeholder="admin@amaltea.com.pl"
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="font-mono text-xs uppercase tracking-wider text-[#C5A880] block mb-1.5">
+                  {lang === 'pl' ? 'Hasło' : 'Password'}
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#C5A880] focus:border-[#C5A880] text-sm"
+                  placeholder="••••••••••••"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="p-3 border border-red-500/20 bg-red-500/5 text-red-500 text-xs font-mono rounded">
+                ⚠️ {error}
+              </div>
+            )}
+
             <div>
-              <label htmlFor="email-address" className="font-mono text-xs uppercase tracking-wider text-[#C5A880] block mb-1.5">
-                {lang === 'pl' ? 'Email Administratora' : 'Admin Email'}
-              </label>
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full flex justify-center py-3 px-4 border border-[#C5A880] text-xs font-mono font-bold tracking-widest text-[#0A1128] bg-gradient-to-r from-[#C5A880] via-[#E2D1B6] to-[#C5A880] hover:from-[#BCA075] hover:to-[#BCA075] uppercase cursor-pointer disabled:opacity-55 transition-all shadow-md mb-3"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-[#0A1128] border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span>{lang === 'pl' ? 'ZALOGUJ SIĘ' : 'SIGN IN'}</span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setShowForgot(true); setResetEmail(email); }}
+                className="w-full text-center text-xs font-mono text-[#C5A880] hover:underline cursor-pointer pt-2 block"
+              >
+                {lang === 'pl' ? 'Nie pamiętasz hasła?' : 'Forgot your password?'}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
+            <div className="space-y-3">
+              <h3 className="font-mono text-xs uppercase tracking-wider text-[#C5A880] font-bold">
+                {lang === 'pl' ? 'Resetowanie Hasła' : 'Reset Password'}
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                {lang === 'pl'
+                  ? 'Wprowadź swój adres e-mail administratora, a wyślemy Ci link do zresetowania hasła.'
+                  : 'Enter your administrator email address and we will send you a password reset link.'}
+              </p>
               <input
-                id="email-address"
-                name="email"
                 type="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#C5A880] focus:border-[#C5A880] text-sm"
                 placeholder="admin@amaltea.com.pl"
               />
             </div>
-            <div>
-              <label htmlFor="password" className="font-mono text-xs uppercase tracking-wider text-[#C5A880] block mb-1.5">
-                {lang === 'pl' ? 'Hasło' : 'Password'}
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#C5A880] focus:border-[#C5A880] text-sm"
-                placeholder="••••••••••••"
-              />
-            </div>
-          </div>
 
-          {error && (
-            <div className="p-3 border border-red-500/20 bg-red-500/5 text-red-500 text-xs font-mono rounded">
-              ⚠️ {error}
-            </div>
-          )}
+            {resetError && (
+              <div className="p-3 border border-red-500/20 bg-red-500/5 text-red-500 text-xs font-mono rounded">
+                ⚠️ {resetError}
+              </div>
+            )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-[#C5A880] text-xs font-mono font-bold tracking-widest text-[#0A1128] bg-gradient-to-r from-[#C5A880] via-[#E2D1B6] to-[#C5A880] hover:from-[#BCA075] hover:to-[#BCA075] uppercase cursor-pointer disabled:opacity-55 transition-all shadow-md"
-            >
-              {loading ? (
-                <div className="w-4 h-4 border-2 border-[#0A1128] border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <span>{lang === 'pl' ? 'ZALOGUJ SIĘ' : 'SIGN IN'}</span>
-              )}
-            </button>
-          </div>
-        </form>
+            {resetSent && (
+              <div className="p-3 border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono rounded">
+                ✅ {lang === 'pl' ? 'Link do zresetowania hasła został wysłany! Sprawdź swoją skrzynkę odbiorczą.' : 'Password reset link sent! Please check your email inbox.'}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <button
+                type="submit"
+                disabled={resetLoading}
+                className="group relative w-full flex justify-center py-3 px-4 border border-[#C5A880] text-xs font-mono font-bold tracking-widest text-[#0A1128] bg-gradient-to-r from-[#C5A880] via-[#E2D1B6] to-[#C5A880] hover:from-[#BCA075] hover:to-[#BCA075] uppercase cursor-pointer disabled:opacity-55 transition-all shadow-md"
+              >
+                {resetLoading ? (
+                  <div className="w-4 h-4 border-2 border-[#0A1128] border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span>{lang === 'pl' ? 'WYŚLIJ LINK RESETUJĄCY' : 'SEND RESET LINK'}</span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowForgot(false)}
+                className="w-full text-center text-xs font-mono text-slate-500 hover:text-[#C5A880] hover:underline cursor-pointer pt-2 block"
+              >
+                ← {lang === 'pl' ? 'Powrót do logowania' : 'Back to login'}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

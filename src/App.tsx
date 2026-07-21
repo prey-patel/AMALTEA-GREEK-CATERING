@@ -210,10 +210,13 @@ export default function App() {
       verifyAdminAccess(initialSession);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
       setSession(currentSession);
       if (currentSession) {
         verifyAdminAccess(currentSession);
+        if (event === 'PASSWORD_RECOVERY') {
+          setActiveTab('admin_settings');
+        }
       } else {
         setAdminVerified(false);
       }
