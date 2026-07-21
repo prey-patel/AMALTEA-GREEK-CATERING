@@ -13,6 +13,7 @@ const AboutSection = React.lazy(() => import('../components/Home/AboutSection'))
 const ServicesSection = React.lazy(() => import('../components/Home/ServicesSection'));
 const RestaurantsSection = React.lazy(() => import('../components/Home/RestaurantsSection'));
 const StepsSection = React.lazy(() => import('../components/Home/StepsSection'));
+const SeoFaqSection = React.lazy(() => import('../components/Home/SeoFaqSection'));
 const CtaSection = React.lazy(() => import('../components/Home/CtaSection'));
 
 interface HomeProps {
@@ -271,6 +272,7 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
         <ServicesSection lang={lang} setActiveTab={setActiveTab} t={t} categories={categories} isReduced={isReduced} />
         <RestaurantsSection lang={lang} isReduced={isReduced} />
         <StepsSection lang={lang} isReduced={isReduced} />
+        <SeoFaqSection lang={lang} isReduced={isReduced} />
         <CtaSection lang={lang} setActiveTab={setActiveTab} isReduced={isReduced} />
       </React.Suspense>
     </div>
