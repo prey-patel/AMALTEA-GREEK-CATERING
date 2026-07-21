@@ -62,9 +62,9 @@ CREATE TABLE IF NOT EXISTS public.gallery (
 );
 
 -- 4b. gallery_public View (defense-in-depth)
--- Exposes only display-safe columns. No file_path, no created_by.
--- Anonymous users read from this view; admins read from the table directly.
-CREATE OR REPLACE VIEW public.gallery_public AS
+-- Exposes only display-safe columns. Uses security_invoker = true for Security Advisor compliance.
+CREATE OR REPLACE VIEW public.gallery_public
+WITH (security_invoker = true) AS
 SELECT
     id,
     image_url,
@@ -75,9 +75,10 @@ SELECT
     created_at
 FROM public.gallery;
 
+GRANT SELECT ON public.gallery TO anon;
+GRANT SELECT ON public.gallery TO authenticated;
 GRANT SELECT ON public.gallery_public TO anon;
 GRANT SELECT ON public.gallery_public TO authenticated;
-REVOKE ALL ON public.gallery FROM anon;
 
 -- 5. inquiries Table
 -- Stores client form submissions for catering request booking.
@@ -272,18 +273,18 @@ CREATE POLICY "Allow public read access to catering_categories"
     USING (true);
 
 -- Table: gallery
--- Anonymous users have NO direct access to the gallery table.
--- They use the gallery_public view instead (see above).
+CREATE POLICY "Allow public select"
+    ON public.gallery
+    FOR SELECT
+    TO public
+    USING (true);
+
 CREATE POLICY "Allow admin manage"
     ON public.gallery
     FOR ALL
     TO authenticated
     USING (public.is_admin())
     WITH CHECK (public.is_admin());
-
--- NOTE: The old "Allow public select" policy (TO public, USING true) has been
--- replaced by the gallery_public view. Authenticated admin access is handled
--- by the "Allow admin manage" policy above.
 
 -- Table: inquiries
 CREATE POLICY "Allow admins/owners to manage inquiries"
