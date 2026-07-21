@@ -883,8 +883,8 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
       setStatusMessage({
         type: 'success',
         text: lang === 'pl' 
-          ? 'Żądanie zmiany adresu e-mail zostało wysłane. Sprawdź skrzynkę odbiorczą na obu adresach e-mail w celu potwierdzenia.' 
-          : 'Email update initiated. A confirmation link has been sent to both your old and new email addresses.'
+          ? 'Żądanie zmiany adresu e-mail zostało wysłane. Sprawdź nową skrzynkę odbiorczą w celu potwierdzenia.' 
+          : 'Email update initiated. A confirmation link has been sent to your new email address. Please click the link in your inbox.'
       });
       setNewEmail('');
     } catch (err: unknown) {
