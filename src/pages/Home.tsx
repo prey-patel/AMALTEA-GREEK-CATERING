@@ -126,6 +126,9 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
           </picture>
         </div>
 
+        {/* Mobile-only dark overlay for text readability */}
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/50 via-black/40 to-black/60 md:opacity-0 pointer-events-none transition-opacity" />
+
         {/* Left-aligned Content Wrapper */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 w-full flex justify-start items-center select-text">
           <div className="max-w-2xl lg:max-w-3xl space-y-6 md:space-y-8 text-left">
@@ -140,7 +143,7 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
             >
               {/* AMALTEA – wider spacing so visual width matches GREEK CATERING */}
               <h2
-                className="font-serif uppercase leading-none"
+                className="font-serif uppercase leading-none hero-brand-text"
                 style={{
                   fontSize: "clamp(1.8rem, 6.5vw, 4.2rem)",
                   letterSpacing: "0.43em",
@@ -155,7 +158,7 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
 
               {/* GREEK CATERING */}
               <h3
-                className="font-serif uppercase leading-none"
+                className="font-serif uppercase leading-none hero-brand-text"
                 style={{
                   fontSize: "clamp(1.1rem, 4vw, 2.6rem)",
                   letterSpacing: "0.25em",
@@ -173,14 +176,14 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
                 className="flex items-center self-center"
                 style={{ gap: "0.6rem", marginBottom: "0.65rem", width: "65%" }}
               >
-                <div style={{ flex: 1, height: "1px", background: "rgba(53, 92, 125, 0.5)" }} />
+                <div className="hero-brand-divider" style={{ flex: 1, height: "1px", background: "rgba(53, 92, 125, 0.5)" }} />
                 <span className="text-[#C5A880]" style={{ fontSize: "0.5rem", lineHeight: 1 }}>◆</span>
-                <div style={{ flex: 1, height: "1px", background: "rgba(53, 92, 125, 0.5)" }} />
+                <div className="hero-brand-divider" style={{ flex: 1, height: "1px", background: "rgba(53, 92, 125, 0.5)" }} />
               </div>
 
               {/* EL GRECO • PAROS • MYKONOS – centered below divider */}
               <p
-                className="font-sans uppercase"
+                className="font-sans uppercase hero-brand-text"
                 style={{
                   fontSize: "clamp(0.55rem, 1.4vw, 0.85rem)",
                   letterSpacing: "clamp(0.1rem, 0.4vw, 0.25em)",
@@ -198,7 +201,7 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
-              className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-wide text-white leading-tight uppercase"
+              className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-wide text-white leading-tight uppercase hero-title"
             >
               {getFormattedTitle()}
             </motion.h1>
@@ -208,7 +211,7 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-              className="text-black font-sans text-sm sm:text-base max-w-xl leading-relaxed"
+              className="text-black font-sans text-sm sm:text-base max-w-xl leading-relaxed hero-subtitle"
             >
               {pageHeroData
                 ? (lang === 'pl' ? pageHeroData.subtitle_pl : pageHeroData.subtitle_en)

@@ -98,6 +98,24 @@
   border-image: linear-gradient(to right, #355c7d 0%, #5faadc 100%) 1;
 }
 
+/* Mobile-only hero text readability */
+@media (max-width: 767px) {
+  .hero-brand-text {
+    color: #ffffff !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+  .hero-brand-divider {
+    background: rgba(255, 255, 255, 0.5) !important;
+  }
+  .hero-title {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+  }
+  .hero-subtitle {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  }
+}
+
 /* Subtle decorative animations */
 @keyframes pulse-slow {
   0%, 100% { opacity: 0.15; transform: scale(1); }
