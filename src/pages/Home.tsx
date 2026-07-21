@@ -106,16 +106,22 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
       <section className="relative bg-slate-950 dark:bg-brand-bg text-white py-28 md:py-44 px-4 overflow-hidden min-h-[92vh] flex items-center">
         {/* Responsive Background Image using Picture Element for performance */}
         <div className="absolute inset-0 z-0">
-          <img
-            src={heroImageUrl}
-            alt="Amaltea Greek Catering food spread"
-            width="1672"
-            height="817"
-            fetchPriority="high"
-            loading="eager"
-            decoding="async"
-            className="w-full h-full object-cover object-center opacity-100 select-none"
-          />
+          <picture>
+            <source
+              media="(max-width: 640px)"
+              srcSet={heroImageUrl === '/hero-home.jpg' ? '/hero-home-mobile.jpg' : heroImageUrl}
+            />
+            <img
+              src={heroImageUrl}
+              alt="Amaltea Greek Catering food spread"
+              width="1672"
+              height="817"
+              fetchPriority="high"
+              loading="eager"
+              decoding="async"
+              className="w-full h-full object-cover object-center opacity-100 select-none"
+            />
+          </picture>
         </div>
 
         {/* Mobile-only dark overlay for text readability */}
