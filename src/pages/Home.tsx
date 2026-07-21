@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { PageHeroData, CateringCategory, getOptimizedImageUrl } from '../types';
+import { PageHeroData, CateringCategory } from '../types';
 
 // Lazy load below-the-fold sections
 const CoreValues = React.lazy(() => import('../components/Home/CoreValues'));
@@ -95,7 +95,10 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
     return renderContent(title);
   };
 
-  const heroImageUrl = pageHeroData?.image_url || "https://opwutcxkorpdradbalwl.supabase.co/storage/v1/object/public/gallery/hero_home_1781269881317_8tyqhz.png";
+  // Use local compressed JPG for performance; fall back only if admin sets a custom URL
+  const rawHeroUrl = pageHeroData?.image_url || '/hero-home.jpg';
+  // Override the known heavy Supabase PNG with the local optimized copy
+  const heroImageUrl = rawHeroUrl.includes('hero_home_1781269881317_8tyqhz') ? '/hero-home.jpg' : rawHeroUrl;
 
   return (
     <div className="space-y-24 pb-20 overflow-hidden">
@@ -103,27 +106,16 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
       <section className="relative bg-slate-950 dark:bg-brand-bg text-white py-28 md:py-44 px-4 overflow-hidden min-h-[92vh] flex items-center">
         {/* Responsive Background Image using Picture Element for performance */}
         <div className="absolute inset-0 z-0">
-          <picture className="w-full h-full">
-            <source
-              media="(max-width: 640px)"
-              srcSet={`${getOptimizedImageUrl(heroImageUrl, 600)} 600w, ${getOptimizedImageUrl(heroImageUrl, 800)} 800w, ${getOptimizedImageUrl(heroImageUrl, 1000)} 1000w`}
-              sizes="100vw"
-            />
-            <source
-              media="(min-width: 641px)"
-              srcSet={`${getOptimizedImageUrl(heroImageUrl, 1200)} 1200w, ${getOptimizedImageUrl(heroImageUrl, 1920)} 1920w`}
-              sizes="100vw"
-            />
-            <img
-              src={getOptimizedImageUrl(heroImageUrl, 1200)}
-              alt="Amaltea Greek Catering food spread"
-              width="1672"
-              height="817"
-              fetchpriority="high"
-              loading="eager"
-              className="w-full h-full object-cover object-center opacity-100 select-none"
-            />
-          </picture>
+          <img
+            src={heroImageUrl}
+            alt="Amaltea Greek Catering food spread"
+            width="1672"
+            height="817"
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+            className="w-full h-full object-cover object-center opacity-100 select-none"
+          />
         </div>
 
         {/* Mobile-only dark overlay for text readability */}

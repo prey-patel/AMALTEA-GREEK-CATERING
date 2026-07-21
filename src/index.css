@@ -297,4 +297,13 @@
   filter: brightness(0) invert(1) sepia(0.85) saturate(4.5) hue-rotate(10deg) opacity(1);
 }
 
-
+/* Mobile: show logos at full color/opacity since there's no hover */
+@media (max-width: 767px) {
+  .restaurant-logo {
+    transform: scale(1);
+    filter: grayscale(0%) opacity(1);
+  }
+  .dark-mode .restaurant-logo {
+    filter: brightness(0) invert(1) opacity(1);
+  }
+}
