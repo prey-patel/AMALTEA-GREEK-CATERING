@@ -173,7 +173,7 @@ function InteractiveCulinaryImage() {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-[470px] flex items-center justify-center p-4">
+    <div ref={containerRef} className="relative w-full max-w-[450px] aspect-[2/3] mx-auto flex items-center justify-center p-4">
       {/* Layer 1 (Backplane, Z=-20px): Golden outline key pattern frame */}
       <motion.div 
         style={{ y: frameY, transform: 'translateZ(-20px)' }}
@@ -195,11 +195,11 @@ function InteractiveCulinaryImage() {
       >
         {/* Layer 2 (Base, Z=0px): Main Catering image */}
         <img
-          src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=70&w=800"
+          src="/culinary-odyssey.jpg"
           alt="Elegant Polish catering setup"
           loading="lazy"
-          width="800"
-          height="600"
+          width="579"
+          height="868"
           className="w-full h-full object-cover select-none pointer-events-none transform-gpu"
           style={{ transform: 'translateZ(0px) scale(1.05)' }}
         />
