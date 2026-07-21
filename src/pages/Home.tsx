@@ -7,13 +7,32 @@ import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { PageHeroData, CateringCategory } from '../types';
 
+// Helper to auto-reload page once if dynamic module import fails (e.g. stale chunk after new deployment)
+const lazyWithRetry = <T extends React.ComponentType<unknown>>(
+  componentImport: () => Promise<{ default: T }>
+) =>
+  React.lazy(async () => {
+    const hasRefreshed = sessionStorage.getItem('chunk-retry-refreshed');
+    try {
+      const component = await componentImport();
+      sessionStorage.removeItem('chunk-retry-refreshed');
+      return component;
+    } catch (error) {
+      if (!hasRefreshed) {
+        sessionStorage.setItem('chunk-retry-refreshed', 'true');
+        window.location.reload();
+      }
+      throw error;
+    }
+  });
+
 // Lazy load below-the-fold sections
-const CoreValues = React.lazy(() => import('../components/Home/CoreValues'));
-const AboutSection = React.lazy(() => import('../components/Home/AboutSection'));
-const ServicesSection = React.lazy(() => import('../components/Home/ServicesSection'));
-const RestaurantsSection = React.lazy(() => import('../components/Home/RestaurantsSection'));
-const StepsSection = React.lazy(() => import('../components/Home/StepsSection'));
-const CtaSection = React.lazy(() => import('../components/Home/CtaSection'));
+const CoreValues = lazyWithRetry(() => import('../components/Home/CoreValues'));
+const AboutSection = lazyWithRetry(() => import('../components/Home/AboutSection'));
+const ServicesSection = lazyWithRetry(() => import('../components/Home/ServicesSection'));
+const RestaurantsSection = lazyWithRetry(() => import('../components/Home/RestaurantsSection'));
+const StepsSection = lazyWithRetry(() => import('../components/Home/StepsSection'));
+const CtaSection = lazyWithRetry(() => import('../components/Home/CtaSection'));
 
 interface HomeProps {
   lang: 'en' | 'pl';

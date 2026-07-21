@@ -9,14 +9,32 @@ import { AnimatePresence } from 'motion/react';
 import { Header } from './components/Layout/Header';
 import { Footer } from './components/Layout/Footer';
 import Home from './pages/Home';
-const About = React.lazy(() => import('./pages/About'));
-const Business = React.lazy(() => import('./pages/Business'));
-const Private = React.lazy(() => import('./pages/Private'));
-const Gallery = React.lazy(() => import('./pages/Gallery'));
-const Contact = React.lazy(() => import('./pages/Contact'));
-const AdminLogin = React.lazy(() => import('./components/Admin/AdminLogin'));
-const AdminGallery = React.lazy(() => import('./components/Admin/AdminGallery'));
-const AdminSettings = React.lazy(() => import('./components/Admin/AdminSettings'));
+const lazyWithRetry = <T extends React.ComponentType<unknown>>(
+  componentImport: () => Promise<{ default: T }>
+) =>
+  React.lazy(async () => {
+    const hasRefreshed = sessionStorage.getItem('chunk-retry-refreshed');
+    try {
+      const component = await componentImport();
+      sessionStorage.removeItem('chunk-retry-refreshed');
+      return component;
+    } catch (error) {
+      if (!hasRefreshed) {
+        sessionStorage.setItem('chunk-retry-refreshed', 'true');
+        window.location.reload();
+      }
+      throw error;
+    }
+  });
+
+const About = lazyWithRetry(() => import('./pages/About'));
+const Business = lazyWithRetry(() => import('./pages/Business'));
+const Private = lazyWithRetry(() => import('./pages/Private'));
+const Gallery = lazyWithRetry(() => import('./pages/Gallery'));
+const Contact = lazyWithRetry(() => import('./pages/Contact'));
+const AdminLogin = lazyWithRetry(() => import('./components/Admin/AdminLogin'));
+const AdminGallery = lazyWithRetry(() => import('./components/Admin/AdminGallery'));
+const AdminSettings = lazyWithRetry(() => import('./components/Admin/AdminSettings'));
 import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
