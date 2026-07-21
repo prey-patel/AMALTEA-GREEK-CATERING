@@ -340,7 +340,7 @@ const RestaurantCard: React.FC<{ rest: RestaurantInfo; idx: number; lang: 'en' |
         </defs>
       </svg>
 
-      <div className="relative h-60 overflow-hidden" style={{ transform: 'translateZ(10px)' }}>
+      <div className="relative w-full aspect-[3/4] overflow-hidden" style={{ transform: 'translateZ(10px)' }}>
         {/* Desaturated image to full color + zoom on hover */}
         <motion.img
           src={rest.image}
