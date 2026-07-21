@@ -114,14 +114,9 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
     return renderContent(title);
   };
 
-  const rawHeroUrl = pageHeroData?.image_url || '/hero-home.jpg';
-  // Override any Supabase PNG or default hero_home URL with our local ultra-optimized JPEGs
-  const isHeavySupabasePng = rawHeroUrl.includes('supabase.co') && rawHeroUrl.toLowerCase().endsWith('.png');
-  const isDefaultHeroHome = rawHeroUrl.includes('hero_home');
-  const useLocalHero = isHeavySupabasePng || isDefaultHeroHome || rawHeroUrl === '/hero-home.jpg';
-
-  const desktopHeroUrl = useLocalHero ? '/hero-home.jpg' : rawHeroUrl;
-  const mobileHeroUrl = useLocalHero ? '/hero-home-mobile.jpg' : rawHeroUrl;
+  // Use Admin Panel image_url dynamically if set by admin, fallback to local optimized defaults
+  const heroImageUrl = pageHeroData?.image_url || '/hero-home.jpg';
+  const mobileHeroUrl = pageHeroData?.image_url || '/hero-home-mobile.jpg';
 
   return (
     <div className="space-y-24 pb-20 overflow-hidden">
@@ -135,7 +130,7 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
               srcSet={mobileHeroUrl}
             />
             <img
-              src={desktopHeroUrl}
+              src={heroImageUrl}
               alt="Amaltea Greek Catering food spread"
               width="1672"
               height="817"
