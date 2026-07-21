@@ -130,7 +130,7 @@ export default function AboutSection({ lang, setActiveTab, isReduced }: AboutSec
           className="lg:col-span-7 relative"
         >
           <div className="absolute top-0 right-[-10px] w-72 h-72 bg-blue-50 bg-pulse-greek rounded-full -z-10" />
-          <div className="relative border-12 border-white shadow-xl overflow-hidden group">
+          <div className="relative max-w-[450px] aspect-[2/3] mx-auto border-12 border-white shadow-xl overflow-hidden group">
             <motion.div 
               initial={{ scaleX: 1 }}
               whileInView={{ scaleX: 0 }}
@@ -142,12 +142,12 @@ export default function AboutSection({ lang, setActiveTab, isReduced }: AboutSec
             <motion.img
               whileHover={{ scale: isReduced ? 1 : 1.05 }}
               transition={{ duration: 0.8 }}
-              src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&q=70&w=800"
+              src="/our-history.jpg"
               alt="Aegean terrace dining"
               loading="lazy"
-              width="800"
-              height="533"
-              className="w-full h-[450px] object-cover"
+              width="579"
+              height="868"
+              className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-blue-900/10 pointer-events-none" />
           </div>
