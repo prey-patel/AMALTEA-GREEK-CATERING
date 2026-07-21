@@ -95,10 +95,14 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
     return renderContent(title);
   };
 
-  // Use local compressed JPG for performance; fall back only if admin sets a custom URL
   const rawHeroUrl = pageHeroData?.image_url || '/hero-home.jpg';
-  // Override the known heavy Supabase PNG with the local optimized copy
-  const heroImageUrl = rawHeroUrl.includes('hero_home_1781269881317_8tyqhz') ? '/hero-home.jpg' : rawHeroUrl;
+  // Override any Supabase PNG or default hero_home URL with our local ultra-optimized JPEGs
+  const isHeavySupabasePng = rawHeroUrl.includes('supabase.co') && rawHeroUrl.toLowerCase().endsWith('.png');
+  const isDefaultHeroHome = rawHeroUrl.includes('hero_home');
+  const useLocalHero = isHeavySupabasePng || isDefaultHeroHome || rawHeroUrl === '/hero-home.jpg';
+
+  const desktopHeroUrl = useLocalHero ? '/hero-home.jpg' : rawHeroUrl;
+  const mobileHeroUrl = useLocalHero ? '/hero-home-mobile.jpg' : rawHeroUrl;
 
   return (
     <div className="space-y-24 pb-20 overflow-hidden">
@@ -109,10 +113,10 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
           <picture>
             <source
               media="(max-width: 640px)"
-              srcSet={heroImageUrl === '/hero-home.jpg' ? '/hero-home-mobile.jpg' : heroImageUrl}
+              srcSet={mobileHeroUrl}
             />
             <img
-              src={heroImageUrl}
+              src={desktopHeroUrl}
               alt="Amaltea Greek Catering food spread"
               width="1672"
               height="817"
