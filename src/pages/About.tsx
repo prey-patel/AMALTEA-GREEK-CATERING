@@ -220,14 +220,6 @@ function InteractiveCulinaryImage() {
             '--mouse-y': `${coords.y}px`
           } as React.CSSProperties}
         />
-
-        {/* Layer 5 (Floating Sign, Z=80px): Greek signature stamp */}
-        <div 
-          className="absolute bottom-6 right-6 bg-amber-500/90 dark:bg-amber-500/80 backdrop-blur-sm text-white font-mono text-[9px] font-bold py-1.5 px-3 uppercase tracking-wider rounded shadow-md z-40 transform-gpu"
-          style={{ transform: 'translateZ(80px)' }}
-        >
-          AMALTEA CLASS
-        </div>
       </motion.div>
     </div>
   );
