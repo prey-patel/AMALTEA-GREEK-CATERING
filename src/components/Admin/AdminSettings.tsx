@@ -865,9 +865,11 @@ export default function AdminSettings({ onLogout, lang, onBackToGallery, refresh
 
     setActionLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: newEmail
-      });
+      const origin = window.location.origin;
+      const { error } = await supabase.auth.updateUser(
+        { email: newEmail },
+        { emailRedirectTo: origin }
+      );
 
       if (error) throw error;
 
