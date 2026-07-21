@@ -379,7 +379,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   },
   {
     id: 'g10',
-    url: 'https://images.unsplash.com/photo-1534080391025-a134628926f4?auto=format&fit=crop&q=70&w=800',
+    url: 'https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&q=70&w=800',
     title: 'Seaside Dining Vibe',
     category: 'venue',
     description: 'A cozy traditional blue table overlooking an ocean bay, perfect for local weddings and private parties.'
