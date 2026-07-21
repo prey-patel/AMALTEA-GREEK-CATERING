@@ -114,9 +114,8 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
     return renderContent(title);
   };
 
-  // Use Admin Panel image_url dynamically if set by admin, fallback to local optimized defaults
-  const heroImageUrl = pageHeroData?.image_url || '/hero-home.jpg';
-  const mobileHeroUrl = pageHeroData?.image_url || '/hero-home-mobile.jpg';
+  // Use Admin Panel image_url dynamically
+  const heroImageUrl = pageHeroData?.image_url || 'https://opwutcxkorpdradbalwl.supabase.co/storage/v1/object/public/gallery/hero_home_1784649230032_lasgb0.png';
 
   return (
     <div className="space-y-24 pb-20 overflow-hidden">
@@ -127,7 +126,7 @@ export default function Home({ lang, setActiveTab, t, categories = [], pageHeroD
           <picture>
             <source
               media="(max-width: 640px)"
-              srcSet={mobileHeroUrl}
+              srcSet={heroImageUrl}
             />
             <img
               src={heroImageUrl}

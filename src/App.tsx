@@ -59,7 +59,7 @@ const DEFAULT_PAGE_HEROES: Record<string, PageHeroData> = {
     title_pl: 'Grecja na Twoim stole',
     subtitle_en: 'We celebrate the Greek art of gathering around the table, bringing together authentic recipes, ingredients sourced directly from Greece, and warm hospitality that turns every occasion into a truly memorable experience.',
     subtitle_pl: 'Celebrujemy grecką sztukę wspólnego biesiadowania, łącząc autentyczne receptury, składniki sprowadzane prosto z Grecji oraz gościnność, która sprawia, że każde spotkanie staje się wyjątkowym doświadczeniem.',
-    image_url: '/hero-home.jpg'
+    image_url: 'https://opwutcxkorpdradbalwl.supabase.co/storage/v1/object/public/gallery/hero_home_1784649230032_lasgb0.png'
   },
   about: {
     id: 'about',
