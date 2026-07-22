@@ -610,33 +610,6 @@ export default function Contact({
             </AnimatePresence>
           </div>
         </div>
-      </section>
-
-      {/* Aesthetic Footer graphic */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border border-slate-200/80 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-white">
-          <div className="space-y-1 text-center md:text-left">
-            <span className="font-serif text-lg font-bold text-blue-955 uppercase block">
-              {lang === 'pl' ? 'Stwórzmy Razem Coś Wyjątkowego' : "Let's Create Something Beautiful"}
-            </span>
-            <p className="text-slate-500 font-sans text-xs leading-relaxed font-light">
-              {lang === 'pl'
-                ? 'Podziel się swoją unikalną wizją, a nasi specjaliści z Warszawy skomponują idealną śródziemnomorską ucztę.'
-                : 'Share your unique vision and our Warsaw event specialists will configure the ultimate Mediterranean feast.'}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              const target = document.getElementById('inquiry-anchor');
-              if (target) target.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="px-6 py-3 bg-blue-800 hover:bg-blue-900 text-white font-mono text-xs font-semibold uppercase tracking-widest cursor-pointer transition-colors duration-300"
-          >
-            {lang === 'pl' ? 'Uzyskaj Darmową Ofertę' : 'Get a Free Quote'}
-          </button>
-        </div>
-      </section>
-    </div>
+      </section>    </div>
   );
 }
