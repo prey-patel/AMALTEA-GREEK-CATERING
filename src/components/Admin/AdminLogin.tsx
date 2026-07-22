@@ -105,10 +105,12 @@ export default function AdminLogin({ onLoginSuccess, lang, t: _t }: AdminLoginPr
         <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-[#C5A880]/40 m-2" />
 
         <div className="text-center space-y-4">
-          <div className="flex justify-center text-[#C5A880] select-none">
-            <svg className="w-16 h-8 fill-currentColor" viewBox="0 0 24 24">
-              <path d="M12 21a9 9 0 0 1-5.65-2.02l.65-.76A8 8 0 0 0 12 20a8 8 0 0 0 7-4.13l.87.5A9 9 0 0 1 12 21zm-7-6.2a8.88 8.88 0 0 1-.5-2.8c0-3 1.8-5.7 4.5-6.83l.38.92A8 8 0 0 0 5.5 12a8 8 0 0 0 .42 2.5l-.92.3zM19 12a8 8 0 0 0-3.88-6.91l.38-.92c2.7 1.13 4.5 3.83 4.5 6.83a8.88 8.88 0 0 1-.5 2.8l-.92-.3a8 8 0 0 0 .42-2.5z" />
-            </svg>
+          <div className="flex justify-center select-none mb-1">
+            <img 
+              src="/logo.webp" 
+              alt="AMALTEA GREEK CATERING Logo" 
+              className="h-16 w-16 object-contain"
+            />
           </div>
           <h2 className="font-serif text-3xl font-light tracking-wider text-slate-900 dark:text-white uppercase">
             {lang === 'pl' ? 'Panel Administratora' : 'Admin Portal'}
