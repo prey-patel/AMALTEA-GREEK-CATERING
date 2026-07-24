@@ -5,8 +5,8 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY") || "";
-const BREVO_SENDER_EMAIL = Deno.env.get("BREVO_SENDER_EMAIL") || "";
-const BREVO_SENDER_NAME = Deno.env.get("BREVO_SENDER_NAME") || "Amaltea Catering";
+const BREVO_SENDER_EMAIL = Deno.env.get("BREVO_SENDER_EMAIL") || "catering@amaltea.com.pl";
+const BREVO_SENDER_NAME = Deno.env.get("BREVO_SENDER_NAME") || "Amaltea Greek Catering";
 const ADMIN_INQUIRY_EMAIL = Deno.env.get("ADMIN_INQUIRY_EMAIL") || "catering@amaltea.com.pl";
 
 function getCorsHeaders(req: Request) {
