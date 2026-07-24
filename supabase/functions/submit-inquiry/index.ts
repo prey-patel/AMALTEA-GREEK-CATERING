@@ -12,11 +12,14 @@ const ADMIN_INQUIRY_EMAIL = Deno.env.get("ADMIN_INQUIRY_EMAIL") || "catering@ama
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get("origin") || "";
   
-  // Whitelist only local development, production, and project-specific preview domains
+  // Whitelist only local development, production, custom domain, and project-specific preview domains
   const isAllowed = 
     origin === "" || 
     origin.startsWith("http://localhost:") || 
     origin === "https://aegean-catering.vercel.app" ||
+    origin === "https://amaltea.com.pl" ||
+    origin === "https://www.amaltea.com.pl" ||
+    origin.endsWith(".amaltea.com.pl") ||
     /^https:\/\/aegean-catering-[a-zA-Z0-9-]+\.vercel\.app$/.test(origin);
     
   return {
